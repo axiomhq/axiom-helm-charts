@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: axiom-db
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: axiom-db
+  serviceName: "axiomdb"
+  podManagementPolicy: "Parallel"
+  replicas: {{ .Values.db.replicas }}
+  template:
+    metadata:
+      labels:
+        app: axiom-db
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+    spec:
+      containers:
+      - name: axiomdb-pod
+        {{- if .Values.db.imageOverride }}
+        image: {{ .Values.db.imageOverride }}
+        {{- else }}
+        image: axiomhq/axiom-db:{{ .Values.db.version | default .Chart.AppVersion }}
+        {{- end }}
+        ports:
+        - containerPort: 80
+        resources:
+          {{- toYaml .Values.db.resources | nindent 10 }}
+        env:
+        - name: AXIOM_LICENSE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: license-token
+        - name: AXIOM_POSTGRES_PREFIX
+          value: {{ .Values.postgresPrefix }}
+        - name: AXIOM_POSTGRES_URL
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: postgres-url
+        {{- $queryFnReplicas := .Values.queryFn.replicas | toString | atoi }}
+        {{- if gt $queryFnReplicas 0 }}
+        - name: AXIOM_FUNCTION_URL
+          value: "http://axiomdb-query-fn"
+        {{- else if .Values.lambdaUrl }}
+        - name: AXIOM_FUNCTION_URL
+          value: {{ .Values.lambdaUrl | quote }}
+        {{- end }}
+        - name: AXIOM_JAEGER_URL
+          value: {{ .Values.tracingUrl }}
+        - name: AXIOM_JAEGER_SAMPLE_RATE
+          value: "0"
+        - name: AXIOM_STREAMING_BATCH_SIZE_FUNCTION
+          value: "1024"
+        {{- if .Values.sentryDsn }}
+        - name: AXIOM_SENTRY_DSN
+          value: {{ .Values.sentryDsn }}
+        {{- end }}
+        - name: AXIOM_STORAGE
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: storage-uri
+        {{- if .Values.storage.fallback.uri }}
+        - name: AXIOM_STORAGE_FALLBACK
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: fallback-storage-uri
+        {{- end }}
+        volumeMounts:
+        - name: data
+          mountPath: /axiom
+      {{- if .Values.registryAccessToken }}
+      imagePullSecrets:
+        - name: axiom-registry
+      {{- else if .Values.imagePullSecrets }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.db.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.db.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.db.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi

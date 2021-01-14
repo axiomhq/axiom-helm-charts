@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: axiom-core
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: axiom-core
+  replicas: {{ .Values.core.replicas }}
+  template:
+    metadata:
+      labels:
+        app: axiom-core
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+    spec:
+      containers:
+      - name: axiom-core-pod
+        {{- if .Values.core.imageOverride }}
+        image: {{ .Values.core.imageOverride }}
+        {{- else }}
+        image: axiomhq/axiom-core:{{ .Values.core.version | default .Chart.AppVersion }}
+        {{- end }}
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        resources:
+          {{- toYaml .Values.core.resources | nindent 10 }}
+        env:
+        - name: AXIOM_LICENSE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: license-token
+        - name: AXIOM_DB_URL
+          value: http://axiomdb-service
+        - name: AXIOM_POSTGRES_URL
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: postgres-url
+        - name: AXIOM_EMAIL_URL
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: email-url
+      {{- if .Values.registryAccessToken }}
+      imagePullSecrets:
+        - name: axiom-registry
+      {{- else if .Values.imagePullSecrets }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.core.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.core.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.core.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

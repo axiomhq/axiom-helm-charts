@@ -1,0 +1,135 @@
+# Default values for axiom.
+# This is a YAML-formatted file.
+
+# License token (as provided by console.axiom.co)
+licenseToken: ""
+
+# Token to access docker registry
+registryAccessToken: ""
+
+# [required] Postgres endpoint, should be in the following format:
+# "postgresql://host:port/dbname?user=[username]&password=[pwd]&sslmode=require"
+# the postgres user provided must be able to create new tables in the DB
+postgresUrl: ""
+
+# [required] URL specifying how to send emails:
+# "sendgrid://apikey?from=noreply@domain.org&fromName=name"
+emailUrl: ""
+
+# URL for the query function deployed as lambda
+lambdaUrl: ""
+
+# Endpoint to send jaeger traces to
+tracingUrl: ""
+
+# Definition of storage
+storage:
+  primary:
+    # [required] Set to a URI based on the cloud you're using, we support azure / aws / do / gcp
+    # Azure: "blob://container"
+    # AWS: "s3://bucketName"
+    # DigitalOcean: "spaces://bucketName"
+    # GCP: "gcs://bucketName"
+    # The URI can optionally be suffixed by a path prefix (for example "s3://bucketName/path/prefix")
+    #uri: "s3://axiom"
+
+    # AWS-specific properties
+    #awsRegion: 'us-east-1'
+    #awsAccessKeyID: ''
+    #awsSecretAccessKey: ''
+
+    # Azure-specific properties
+    #azureStorageAccount: ''
+    #azureStorageAccessKey: ''
+
+    # DigitalOcean-specific properties
+    #spacesRegion: 'nyc3'
+    #spacesKey: ''
+    #spacesSecret: ''
+
+    # GCP-specific properties
+    #googleApplicationCredentials: '{
+    #  "type": "service_account",
+    #  "project_id": "...",
+    #}'
+
+  fallback:
+    # Fallback storage is used when primary is not reachable
+    # use the same format as primary storage including credentials
+    uri: ""
+
+# Prefix for all tables created by this deployment (default is empty)
+postgresPrefix: ""
+
+ingress:
+  enabled: false
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: my-axiom.local
+      paths: ["/*"]
+  tls: []
+  #  - secretName: my-axiom-tls
+  #    hosts:
+  #      - my-axiom.local
+
+# Settings for axiom-core
+core:
+  replicas: 3
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    # limits:
+    #   cpu: 500m
+    #   memory: 1Gi
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Settings for axiom-db
+db:
+  replicas: 3
+  resources:
+    requests:
+      cpu: 750m
+      memory: 2Gi
+    # limits:
+    #   cpu: 2000m
+    #   memory: 4Gi
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Settings for axiomdb-query-fn
+queryFn:
+  replicas: 4
+  resources:
+    requests:
+      cpu: 500m
+      memory: 256Mi
+    # limits:
+    #   cpu: 2000m
+    #   memory: 1Gi
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000

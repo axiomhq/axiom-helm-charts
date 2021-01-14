@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: axiomdb-service
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+  ports:
+  - name: web
+    port: 80
+    targetPort: 80
+  selector:
+    app: axiom-db
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: axiom-core
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+  ports:
+  - name: web
+    port: 80
+    targetPort: 80
+  selector:
+    app: axiom-core
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: axiomdb-query-fn
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+  ports:
+  - name: web
+    port: 80
+    targetPort: 9090
+  selector:
+    app: axiomdb-query
+  type: NodePort
