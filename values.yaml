@@ -1,4 +1,4 @@
-# Default values for axiom.
+# Values file for axiom.
 # This is a YAML-formatted file.
 
 # License token (as provided by console.axiom.co)
@@ -15,12 +15,6 @@ postgresUrl: ""
 # [required] URL specifying how to send emails:
 # "sendgrid://apikey?from=noreply@domain.org&fromName=name"
 emailUrl: ""
-
-# URL for the query function deployed as lambda
-lambdaUrl: ""
-
-# Endpoint to send jaeger traces to
-tracingUrl: ""
 
 # Definition of storage
 storage:
@@ -57,9 +51,6 @@ storage:
     # Fallback storage is used when primary is not reachable
     # use the same format as primary storage including credentials
     uri: ""
-
-# Prefix for all tables created by this deployment (default is empty)
-postgresPrefix: ""
 
 ingress:
   enabled: false
@@ -120,16 +111,3 @@ queryFn:
   tolerations: []
   affinity: {}
 
-
-podSecurityContext:
-  {}
-  # fsGroup: 2000
-
-securityContext:
-  {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
