@@ -2,16 +2,16 @@ apiVersion: v1
 entries:
   axiom:
   - apiVersion: v2
-    appVersion: 1.3.0-rc.10
-    created: "2021-01-21T14:00:07.035092704Z"
+    appVersion: 1.3.0
+    created: "2021-01-28T19:36:19.23515447Z"
     description: Axiom Private
-    digest: ad67f0161a7f875551999d05ea97514f7c1bc060279d6b7edc2143524c70556c
+    digest: 4c9658ff1f75867542ccab1ba0440823774d311a16494e41c85566760192afbd
     maintainers:
     - email: hello@axiom.co
       name: Axiom Inc.
     name: axiom
     type: application
     urls:
-    - axiom-0.2.4.tgz
-    version: 0.2.4
-generated: "2021-01-21T14:00:07.034588919Z"
+    - axiom-0.3.0.tgz
+    version: 0.3.0
+generated: "2021-01-28T19:36:19.234627373Z"

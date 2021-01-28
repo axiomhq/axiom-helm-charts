@@ -1,8 +1,11 @@
 {{- if .Values.ingress.enabled }}
-1. Get the application URL by running these commands:
+Your application should be available at this URL:
 {{- range $host := .Values.ingress.hosts }}
   {{- range .paths }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ . }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ . | trimSuffix "*" }}
   {{- end }}
 {{- end }}
+{{- else }}
+Connect to the application by running this command:
+  $ kubectl -n {{ $.Release.Namespace }} port-forward svc/axiom-core :80
 {{- end }}

@@ -51,6 +51,8 @@ spec:
             secretKeyRef:
               name: axiom-secrets
               key: email-url
+        - name: AXIOM_PUBLIC_URL
+          value: {{ .Values.externalUrl }}
       {{- if .Values.registryAccessToken }}
       imagePullSecrets:
         - name: axiom-registry

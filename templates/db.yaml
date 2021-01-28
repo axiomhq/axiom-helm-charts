@@ -55,7 +55,7 @@ spec:
         - name: AXIOM_JAEGER_SAMPLE_RATE
           value: "0"
         - name: AXIOM_STREAMING_BATCH_SIZE_FUNCTION
-          value: "1024"
+          value: {{ .Values.queryFn.replicas | mul 8 | quote }}
         {{- if .Values.sentryDsn }}
         - name: AXIOM_SENTRY_DSN
           value: {{ .Values.sentryDsn }}

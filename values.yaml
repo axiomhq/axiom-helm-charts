@@ -4,9 +4,6 @@
 # License token (as provided by console.axiom.co)
 licenseToken: ""
 
-# Token to access docker registry
-registryAccessToken: ""
-
 # [required] Postgres endpoint, should be in the following format:
 # "postgresql://host:port/dbname?user=[username]&password=[pwd]&sslmode=require"
 # the postgres user provided must be able to create new tables in the DB
@@ -15,6 +12,10 @@ postgresUrl: ""
 # [required] URL specifying how to send emails:
 # "sendgrid://apikey?from=noreply@domain.org&fromName=name"
 emailUrl: ""
+
+# URL of this instance, email notifications will use this to link back
+# "https://my-axiom.company.org"
+externalUrl: ""
 
 # Definition of storage
 storage:
