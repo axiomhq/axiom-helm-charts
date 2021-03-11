@@ -11,7 +11,6 @@ spec:
     targetPort: 80
   selector:
     app: axiom-db
-  type: NodePort
 ---
 apiVersion: v1
 kind: Service
@@ -41,4 +40,3 @@ spec:
     targetPort: 9090
   selector:
     app: axiomdb-query
-  type: NodePort
