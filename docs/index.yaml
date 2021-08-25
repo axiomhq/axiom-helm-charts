@@ -2,8 +2,21 @@ apiVersion: v1
 entries:
   axiom:
   - apiVersion: v2
+    appVersion: 1.10.0
+    created: "2021-08-25T17:15:17.671281286+01:00"
+    description: Axiom Private
+    digest: e4c7335fe41e13c8c61956b76416b08ec9e5a46746205b63ae9d1c549114b781
+    maintainers:
+    - email: hello@axiom.co
+      name: Axiom Inc.
+    name: axiom
+    type: application
+    urls:
+    - https://axiomhq.github.io/axiom-helm-charts/axiom-0.10.0.tgz
+    version: 0.10.0
+  - apiVersion: v2
     appVersion: 1.7.0
-    created: "2021-04-09T15:00:45.36489187+01:00"
+    created: "2021-08-25T17:15:17.674181045+01:00"
     description: Axiom Private
     digest: bf510611d1123556d5ad21c76ecc59a7a73b90612c0fb28e2d215df220ea945e
     maintainers:
@@ -16,7 +29,7 @@ entries:
     version: 0.7.0
   - apiVersion: v2
     appVersion: 1.6.0
-    created: "2021-04-09T15:00:45.364474206+01:00"
+    created: "2021-08-25T17:15:17.673715029+01:00"
     description: Axiom Private
     digest: df5f11accff37e10c46333365deb664c1b9d34993f9613fcd6721ba4a2340907
     maintainers:
@@ -29,7 +42,7 @@ entries:
     version: 0.6.0
   - apiVersion: v2
     appVersion: 1.5.0
-    created: "2021-04-09T15:00:45.363956795+01:00"
+    created: "2021-08-25T17:15:17.673245991+01:00"
     description: Axiom Private
     digest: b2f698a825d16860809fd73ed3f1b687f30a173f109fc10cbd468aed0127ea3a
     maintainers:
@@ -42,7 +55,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 1.4.0
-    created: "2021-04-09T15:00:45.363457514+01:00"
+    created: "2021-08-25T17:15:17.672789296+01:00"
     description: Axiom Private
     digest: f9e569fa91737e75c2d41169094aef8bf51d5e083c3dc57ec5b35550f526b1d7
     maintainers:
@@ -55,7 +68,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: 1.3.1
-    created: "2021-04-09T15:00:45.362944119+01:00"
+    created: "2021-08-25T17:15:17.672317895+01:00"
     description: Axiom Private
     digest: eebaeee460e47e23551bac4b60fa1e626f4b1d01434f3f7b04217a73b1d6a5ed
     maintainers:
@@ -68,7 +81,7 @@ entries:
     version: 0.3.1
   - apiVersion: v2
     appVersion: 1.3.0
-    created: "2021-04-09T15:00:45.362390368+01:00"
+    created: "2021-08-25T17:15:17.671800377+01:00"
     description: Axiom Private
     digest: 4c9658ff1f75867542ccab1ba0440823774d311a16494e41c85566760192afbd
     maintainers:
@@ -79,4 +92,4 @@ entries:
     urls:
     - https://axiomhq.github.io/axiom-helm-charts/axiom-0.3.0.tgz
     version: 0.3.0
-generated: "2021-04-09T15:00:45.361665713+01:00"
+generated: "2021-08-25T17:15:17.670703109+01:00"
