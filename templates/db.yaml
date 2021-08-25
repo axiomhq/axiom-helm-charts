@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
       app: axiom-db
-  serviceName: "axiomdb"
+  serviceName: "axiom-db"
   podManagementPolicy: "Parallel"
   replicas: {{ .Values.db.replicas }}
   template:
@@ -86,7 +86,7 @@ spec:
         {{- end }}
         volumeMounts:
         - name: data
-          mountPath: /axiom
+          mountPath: /axiomdb
       {{- if .Values.registryAccessToken }}
       imagePullSecrets:
         - name: axiom-registry

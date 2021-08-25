@@ -11,6 +11,22 @@ spec:
     targetPort: 80
   selector:
     app: axiom-db
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: axiom-db
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+  ports:
+  - name: web
+    port: 80
+    targetPort: 80
+  selector:
+    app: axiom-db
+  clusterIP: None
 ---
 apiVersion: v1
 kind: Service
