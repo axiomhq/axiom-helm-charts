@@ -58,6 +58,11 @@ spec:
             secretKeyRef:
               name: axiom-secrets
               key: postgres-url
+        - name: AXIOM_REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: redis-url
         - name: AXIOM_EMAIL_URL
           valueFrom:
             secretKeyRef:
