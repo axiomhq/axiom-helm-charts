@@ -89,6 +89,10 @@ spec:
               name: axiom-secrets
               key: fallback-storage-uri
         {{- end }}
+        {{- range .Values.db.extraEnvs }}
+        - name: {{ .name }}
+          value: {{ .value }}
+        {{- end }}
         volumeMounts:
         - name: data
           mountPath: /axiomdb
