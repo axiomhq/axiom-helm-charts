@@ -54,6 +54,11 @@ spec:
             secretKeyRef:
               name: axiom-secrets
               key: postgres-url
+        - name: AXIOM_REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: redis-url
         {{- $queryFnReplicas := .Values.queryFn.replicas | toString | atoi }}
         {{- if gt $queryFnReplicas 0 }}
         - name: AXIOM_FUNCTION_URL
@@ -83,6 +88,10 @@ spec:
             secretKeyRef:
               name: axiom-secrets
               key: fallback-storage-uri
+        {{- end }}
+        {{- range .Values.db.extraEnvs }}
+        - name: {{ .name }}
+          value: {{ .value }}
         {{- end }}
         volumeMounts:
         - name: data

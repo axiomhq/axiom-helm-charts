@@ -58,6 +58,11 @@ spec:
             secretKeyRef:
               name: axiom-secrets
               key: postgres-url
+        - name: AXIOM_REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: redis-url
         - name: AXIOM_EMAIL_URL
           valueFrom:
             secretKeyRef:
@@ -65,6 +70,10 @@ spec:
               key: email-url
         - name: AXIOM_PUBLIC_URL
           value: {{ .Values.externalUrl }}
+        {{- range .Values.core.extraEnvs }}
+        - name: {{ .name }}
+          value: {{ .value }}
+        {{- end }}
       {{- if .Values.registryAccessToken }}
       imagePullSecrets:
         - name: axiom-registry

@@ -9,6 +9,13 @@ licenseToken: ""
 # the postgres user provided must be able to create new tables in the DB
 postgresUrl: ""
 
+# Redis URL, should be in the following format:
+# "redis://:<password (optional)>@<address>/<db (optional)>"
+# Examples:
+#   redis://redis.example.org:6379
+#   redis://:qwerty@localhost:6379/1
+redisUrl: ""
+
 # [required] URL specifying how to send emails:
 # "sendgrid://apikey?from=noreply@domain.org&fromName=name"
 emailUrl: ""
@@ -81,6 +88,7 @@ core:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
 
 # Settings for axiom-db
 db:
@@ -96,6 +104,7 @@ db:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
 
 # Settings for axiomdb-query-fn
 queryFn:
@@ -111,4 +120,4 @@ queryFn:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-
+  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
