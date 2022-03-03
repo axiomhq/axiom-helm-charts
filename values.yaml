@@ -1,7 +1,7 @@
 # Values file for axiom.
 # This is a YAML-formatted file.
 
-# License token (as provided by cloud.axiom.co)
+# License token (as provided by Axiom support)
 licenseToken: "" # if not supplied, you'll end up with the free plan
 
 # [required] Postgres endpoint, should be in the following format:
