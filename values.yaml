@@ -18,7 +18,7 @@ redisUrl: ""
 
 # [required] URL specifying how to send emails:
 # "sendgrid://apikey?from=noreply@domain.org&fromName=name"
-# "smtp://username:password@address:port?from=infra@axiom.co&fromName=Axiom&insecure=true"
+# "smtp://username:password@address:port?from=origin-email&fromName=Axiom&insecure=true"
 emailUrl: ""
 
 # URL of this instance, email notifications will use this to link back
