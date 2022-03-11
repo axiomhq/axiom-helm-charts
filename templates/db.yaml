@@ -90,8 +90,8 @@ spec:
               key: fallback-storage-uri
         {{- end }}
         {{- range .Values.db.extraEnvs }}
-        - name: {{ .name }}
-          value: {{ .value }}
+        - name: {{ quote .name }}
+          value: {{ quote .value }}
         {{- end }}
         volumeMounts:
         - name: data

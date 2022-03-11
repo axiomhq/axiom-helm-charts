@@ -42,8 +42,8 @@ spec:
               name: axiom-secrets
               key: storage-uri
         {{- range .Values.queryFn.extraEnvs }}
-        - name: {{ .name }}
-          value: {{ .value }}
+        - name: {{ quote .name }}
+          value: {{ quote .value }}
         {{- end }}
       {{- if .Values.registryAccessToken }}
       imagePullSecrets:
