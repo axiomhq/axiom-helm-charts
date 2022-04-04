@@ -59,6 +59,18 @@ spec:
             secretKeyRef:
               name: axiom-secrets
               key: redis-url
+        - name: AXIOM_CACHE_REGISTRY_URL
+          {{- if .Values.cacheRegistryUrl }}
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: cache-registry-url
+          {{- else }}
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: redis-url
+          {{- end }}
         {{- $queryFnReplicas := .Values.queryFn.replicas | toString | atoi }}
         {{- if gt $queryFnReplicas 0 }}
         - name: AXIOM_FUNCTION_URL
