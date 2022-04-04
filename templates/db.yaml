@@ -60,7 +60,7 @@ spec:
               name: axiom-secrets
               key: redis-url
         - name: AXIOM_CACHE_REGISTRY_URL
-          {{- if .Values.db.extraEnvs.cacheRegistryUrl }}
+          {{- if .Values.cacheRegistryUrl }}
           valueFrom:
             secretKeyRef:
               name: axiom-secrets
