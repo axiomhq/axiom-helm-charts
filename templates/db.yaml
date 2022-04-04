@@ -60,7 +60,14 @@ spec:
               name: axiom-secrets
               key: redis-url
         - name: AXIOM_CACHE_REGISTRY_URL
-          value: redis://{{ .Values.AXIOM_REDIS_URL | quote }}
+          {{- if .Values.db.cacheRegistryUrl }}
+          value: {{ .Values.db.cacheRegistryUrl }}
+          {{- else }}
+          valueFrom:
+            secretKeyRef:
+              name: axiom-secrets
+              key: redis-url
+          {{- end }}
         {{- $queryFnReplicas := .Values.queryFn.replicas | toString | atoi }}
         {{- if gt $queryFnReplicas 0 }}
         - name: AXIOM_FUNCTION_URL
