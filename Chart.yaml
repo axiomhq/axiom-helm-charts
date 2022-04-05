@@ -2,7 +2,7 @@ apiVersion: v2
 name: axiom
 description: Axiom Private
 type: application
-version: 0.19.1
+version: 0.19.2
 appVersion: 1.19.0
 maintainers:
 - name: Axiom Inc.
