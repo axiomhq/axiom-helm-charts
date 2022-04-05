@@ -17,7 +17,7 @@ postgresUrl: ""
 redisUrl: ""
 # If you want, you can set a different Redis instance as cache registry.
 # If you leave this unset, it will use the above redisUrl as cache registry.
-cache-registry-url: ""
+cacheRegistryUrl: ""
 
 # [required] URL specifying how to send emails:
 # "sendgrid://apikey?from=noreply@domain.org&fromName=name"
