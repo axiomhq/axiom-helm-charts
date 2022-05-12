@@ -74,6 +74,8 @@ spec:
         {{- if .Values.lambdaUrl }}
         - name: AXIOM_FUNCTION_URL
           value: {{ .Values.lambdaUrl | quote }}
+        - name: AXIOM_STREAMING_BATCH_SIZE_FUNCTION
+          value: "512"
         {{- else }}
         {{- $queryFnReplicas := .Values.queryFn.replicas | toString | atoi }}
         {{- if gt $queryFnReplicas 0 }}
