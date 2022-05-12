@@ -15,9 +15,14 @@ postgresUrl: ""
 #   redis://redis.example.org:6379
 #   redis://:qwerty@localhost:6379/1
 redisUrl: ""
+
 # If you want, you can set a different Redis instance as cache registry.
 # If you leave this unset, it will use the above redisUrl as cache registry.
 cacheRegistryUrl: ""
+
+# Lambda query runner URL, you can set to the query fn ALB URL
+# Its usage overrides axiomdb-query-fn deployment
+lambdaUrl: ""
 
 # [required] URL specifying how to send emails:
 # "sendgrid://apikey?from=noreply@domain.org&fromName=name"
