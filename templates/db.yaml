@@ -71,20 +71,24 @@ spec:
               name: axiom-secrets
               key: redis-url
           {{- end }}
+        {{- if .Values.lambdaUrl }}
+        - name: AXIOM_FUNCTION_URL
+          value: {{ .Values.lambdaUrl | quote }}
+        - name: AXIOM_STREAMING_BATCH_SIZE_FUNCTION
+          value: "512"
+        {{- else }}
         {{- $queryFnReplicas := .Values.queryFn.replicas | toString | atoi }}
         {{- if gt $queryFnReplicas 0 }}
         - name: AXIOM_FUNCTION_URL
           value: "http://axiomdb-query-fn"
-        {{- else if .Values.lambdaUrl }}
-        - name: AXIOM_FUNCTION_URL
-          value: {{ .Values.lambdaUrl | quote }}
+        - name: AXIOM_STREAMING_BATCH_SIZE_FUNCTION
+          value: {{ .Values.queryFn.replicas | mul 8 | quote }}
+        {{- end }}
         {{- end }}
         - name: AXIOM_JAEGER_URL
           value: {{ .Values.tracingUrl }}
         - name: AXIOM_JAEGER_SAMPLE_RATE
           value: "0"
-        - name: AXIOM_STREAMING_BATCH_SIZE_FUNCTION
-          value: {{ .Values.queryFn.replicas | mul 8 | quote }}
         {{- if .Values.sentryDsn }}
         - name: AXIOM_SENTRY_DSN
           value: {{ .Values.sentryDsn }}
