@@ -1,0 +1,4 @@
+owner: a-khaledf
+git-repo: axiom-helm-charts
+package-path: docs
+index-path: docs/index.yaml
