@@ -27,7 +27,7 @@ jobs:
 
       - name: release
         run: |
-          branch_name=release-${{ github.sha }}
+          branch_name=release-$(grep -o 'version:.*' Chart.yaml | cut -d ' ' -f 2)
           destination=docs
           commit_message="release: update index.yaml and upload new helm package"
 
