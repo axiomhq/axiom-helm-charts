@@ -2,8 +2,8 @@ apiVersion: v2
 name: axiom
 description: Axiom Private
 type: application
-version: 0.20.3
-appVersion: 1.20.3
+version: 0.20.4
+appVersion: 1.20.4
 maintainers:
 - name: Axiom Inc.
   email: hello@axiom.co
