@@ -1,0 +1,49 @@
+name: Release Charts
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.event.commits[0].committer.username != 'github-actions'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: v3.8.1
+
+      - name: release
+        run: |
+          branch_name=release-$(grep -o 'version:.*' Chart.yaml | cut -d ' ' -f 2)
+          destination=docs
+          commit_message="release: update index.yaml and upload new helm package"
+
+          # Create a new branch
+          git checkout -b $branch_name
+          
+          # Create new Helm Package and update index.yaml
+          helm package . --destination $destination
+          helm repo index $destination --url 'https://${{ github.repository_owner }}.github.io/${{ github.repository.name }}'
+
+          # Commit and push the updated files
+          git add .
+          git commit -m $commit_message
+          git push origin $branch_name
+          
+          # Create a new PR
+          gh pr create --fill
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
