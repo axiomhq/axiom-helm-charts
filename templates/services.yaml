@@ -7,8 +7,8 @@ metadata:
 spec:
   ports:
   - name: web
-    port: 8080
-    targetPort: 8080
+    port: 80
+    targetPort: 80
   selector:
     app: axiom-db
   type: ClusterIP
@@ -22,8 +22,8 @@ metadata:
 spec:
   ports:
   - name: web
-    port: 8080
-    targetPort: 8080
+    port: 80
+    targetPort: 80
   selector:
     app: axiom-db
   clusterIP: None
@@ -37,8 +37,8 @@ metadata:
 spec:
   ports:
   - name: web
-    port: 8080
-    targetPort: 8080
+    port: 80
+    targetPort: 80
   selector:
     app: axiom-core
   type: NodePort
