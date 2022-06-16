@@ -3,7 +3,20 @@ entries:
   axiom:
   - apiVersion: v2
     appVersion: 1.20.4
-    created: "2022-06-07T18:57:19.1456+02:00"
+    created: "2022-06-16T15:15:56.053129+02:00"
+    description: Axiom Private
+    digest: 6a9ca18ae44c0e502e623b43487283b268a56a35ef6d106fe0d0efe73a18e71b
+    maintainers:
+    - email: hello@axiom.co
+      name: Axiom Inc.
+    name: axiom
+    type: application
+    urls:
+    - https://axiomhq.github.io/axiom-helm-charts/axiom-0.20.5.tgz
+    version: 0.20.5
+  - apiVersion: v2
+    appVersion: 1.20.4
+    created: "2022-06-16T15:15:56.052684+02:00"
     description: Axiom Private
     digest: e028dfa82ab24c5b12ac33611eb6361b2507ad6ef88db3452a2dbb16f638ad3e
     maintainers:
