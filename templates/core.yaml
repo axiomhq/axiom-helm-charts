@@ -36,11 +36,11 @@ spec:
         image: axiomhq/axiom-core:{{ .Values.core.version | default .Chart.AppVersion }}
         {{- end }}
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         livenessProbe:
           httpGet:
             path: /
-            port: 80
+            port: 8080
           initialDelaySeconds: 15
           periodSeconds: 30
         resources:
