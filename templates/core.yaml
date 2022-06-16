@@ -52,7 +52,7 @@ spec:
               name: axiom-secrets
               key: license-token
         - name: AXIOM_DB_URL
-          value: http://axiomdb-service
+          value: http://axiomdb-service:8080
         - name: AXIOM_POSTGRES_URL
           valueFrom:
             secretKeyRef:
