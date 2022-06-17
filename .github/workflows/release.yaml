@@ -40,7 +40,7 @@ jobs:
 
           # Commit and push the updated files
           git add .
-          git commit -m $commit_message
+          git commit -m "$commit_message"
           git push origin $branch_name
           
           # Create a new PR
