@@ -38,7 +38,7 @@ spec:
         image: axiomhq/axiom-db:{{ .Values.db.version | default .Chart.AppVersion }}
         {{- end }}
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         resources:
           {{- toYaml .Values.db.resources | nindent 10 }}
         env:
