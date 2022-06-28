@@ -24,26 +24,8 @@ jobs:
         uses: azure/setup-helm@v1
         with:
           version: v3.8.1
-
-      - name: release
-        run: |
-          branch_name=release-$(grep -o 'version:.*' Chart.yaml | cut -d ' ' -f 2)
-          destination=docs
-          commit_message="release: update index.yaml and upload new helm package"
-
-          # Create a new branch
-          git checkout -b $branch_name
           
-          # Create new Helm Package and update index.yaml
-          helm package . --destination $destination
-          helm repo index $destination --url 'https://${{ github.repository_owner }}.github.io/${{ github.repository.name }}'
-
-          # Commit and push the updated files
-          git add .
-          git commit -m "$commit_message"
-          git push origin $branch_name
-          
-          # Create a new PR
-          gh pr create --fill
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.4.0
         env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
