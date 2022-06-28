@@ -27,5 +27,8 @@ jobs:
           
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1
+        with:
+          charts_dir: ./
+          charts_repo_url: https://axiomhq.github.io/axiom-helm-charts
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
