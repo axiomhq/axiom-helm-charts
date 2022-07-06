@@ -1,8 +1,8 @@
 {{- if .Values.ingress.enabled -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
 {{- else -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
@@ -25,6 +25,22 @@ spec:
     {{- end }}
   {{- end }}
   rules:
+  {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ . }}
+            pathType: Prefix
+            backend:
+              service:
+                name: axiom-core
+                port:
+                  number: 80
+          {{- end }}
+    {{- end }}
+  {{- else -}}
     {{- range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
@@ -36,4 +52,5 @@ spec:
               servicePort: 80
           {{- end }}
     {{- end }}
+  {{- end }}
 {{- end }}
