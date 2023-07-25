@@ -81,7 +81,6 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   hosts:
     - host: my-axiom.local
-      paths: ["/*"]
   tls: []
   #  - secretName: my-axiom-tls
   #    hosts:
@@ -114,6 +113,7 @@ api:
     # - name: AXIOM_XYZ
     #   value: "xyz"
 
+# Settings for axiom-app
 app:
   replicas: 3
   image:
@@ -167,6 +167,7 @@ db:
   #       name: <SECRET_NAME>
   extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
 
+# Settings for axiom-monitors
 monitors:
   replicas: 1
   image:
@@ -191,6 +192,7 @@ monitors:
   #       name: <SECRET_NAME>
   extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
 
+# Settings for axiom-db-query-runner
 dbQueryRunner:
   replicas: 2
   image:
@@ -208,13 +210,18 @@ dbQueryRunner:
     # limits:
     #   cpu: 2000m
     #   memory: 4Gi
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
   envFrom: []
   #   - configMapRef:
   #       name: <CONFIGMAP_NAME>
   #   - secretRef:
   #       name: <SECRET_NAME>
+  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
 
-# Settings for axiomdb-query-fn
+# Settings for axiom-db-query-fn
 queryFn:
   replicas: 4
   image:

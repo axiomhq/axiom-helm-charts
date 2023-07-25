@@ -63,7 +63,7 @@ spec:
                   name: {{ template "axiom.fullname" . }}-secrets
                   key: nexauth-secret
             - name: NEXTAUTH_URL
-              value: "https://aws1.dev.axiomtestlabs.co/frapi/auth"
+              value: "{{ .Values.externalUrl }}/frapi/auth"
             {{- range .Values.app.extraEnvs }}
             - name: {{ quote .name }}
               value: {{ quote .value }}

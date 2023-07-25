@@ -63,35 +63,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: axiom-config
-                  key: public-url
-            - name: AXIOM_PUBLIC_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: axiom-config
-                  key: public-url
-            - name: AXIOM_PUBLIC_API_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: axiom-config
-                  key: public-api-url
-            - name: AXIOM_ASSET_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: axiom-config
-                  key: assets-url
-                  optional: true
-            - name: AXIOM_VERCEL_WEB_VITALS_PROXY_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: axiom-config
-                  key: vercel-web-vitals-proxy-url
-                  optional: true
-            - name: AXIOM_VERCEL_LOGDRAIN_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: "axiom-config"
-                  key: "vercel-logdrain-url"
-                  optional: true
+                  key: app-url
             - name: AXIOM_NO_RATE_LIMITING
               valueFrom:
                 configMapKeyRef:

@@ -81,11 +81,6 @@ spec:
                   name: axiom-config
                   key: dataset-limit
                   optional: true
-            - name: AXIOM_SENTRY_DSN
-              valueFrom:
-                configMapKeyRef:
-                  name: axiom-config
-                  key: sentry-dsn
             - name: AXIOM_REDIS_URL
               valueFrom:
                 configMapKeyRef:

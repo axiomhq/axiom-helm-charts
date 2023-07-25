@@ -87,12 +87,6 @@ spec:
                 configMapKeyRef:
                   name: {{ template "axiom.fullname" . }}-config
                   key: public-api-url
-            - name: AXIOM_ASSET_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ template "axiom.fullname" . }}-config
-                  key: assets-url
-                  optional: true
             {{- range .Values.api.extraEnvs }}
             - name: {{ quote .name }}
               value: {{ quote .value }}

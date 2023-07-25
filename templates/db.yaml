@@ -86,10 +86,6 @@ spec:
         {{- end }}
         - name: AXIOM_JAEGER_SAMPLE_RATE
           value: "0"
-        {{- if .Values.sentryDsn }}
-        - name: AXIOM_SENTRY_DSN
-          value: {{ .Values.sentryDsn }}
-        {{- end }}
         - name: AXIOM_STORAGE
           valueFrom:
             secretKeyRef:
