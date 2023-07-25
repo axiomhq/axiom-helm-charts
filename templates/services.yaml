@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: axiomdb-service
+  name: {{ template "axiom.fullname" . }}-db-service
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
@@ -10,13 +10,13 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app: axiom-db
+    app: {{ template "axiom.fullname" . }}-db
   type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: axiom-db
+  name: {{ template "axiom.fullname" . }}-db
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
@@ -25,13 +25,13 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app: axiom-db
+    app: {{ template "axiom.fullname" . }}-db
   clusterIP: None
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: axiom-core
+  name: {{ template "axiom.fullname" . }}-api
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
@@ -40,14 +40,44 @@ spec:
     port: 80
     targetPort: 8080
   selector:
-    app: axiom-core
+    app: {{ template "axiom.fullname" . }}-api
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "axiom.fullname" . }}-app
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+  ports:
+  - name: web
+    port: 80
+    targetPort: 8080
+  selector:
+    app: {{ template "axiom.fullname" . }}-app
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "axiom.fullname" . }}-login
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+  ports:
+  - name: web
+    port: 80
+    targetPort: 8080
+  selector:
+    app: {{ template "axiom.fullname" . }}-login
   type: NodePort
 ---
 {{- if not .Values.lambdaUrl }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: axiomdb-query-fn
+  name: {{ template "axiom.fullname" . }}-db-query-fn
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
@@ -56,5 +86,5 @@ spec:
     port: 80
     targetPort: 9090
   selector:
-    app: axiomdb-query
+    app: {{ template "axiom.fullname" . }}-db-query-fn
 {{- end }}

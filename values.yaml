@@ -1,6 +1,14 @@
 # Values file for axiom.
 # This is a YAML-formatted file.
 
+nnameOverride:  # ""
+
+# fullnameOverride -- Override the full qualified app name
+fullnameOverride:  # ""
+
+# imagePullSecrets -- add secrets for private images
+imagePullSecrets: []
+
 # License token (as provided by Axiom support)
 licenseToken: "" # if not supplied, you'll end up with the free plan
 
@@ -19,10 +27,6 @@ redisUrl: ""
 # If you want, you can set a different Redis instance as cache registry.
 # If you leave this unset, it will use the above redisUrl as cache registry.
 cacheRegistryUrl: ""
-
-# Lambda query runner URL, you can set to the query fn ALB URL
-# Its usage overrides axiomdb-query-fn deployment
-lambdaUrl: ""
 
 # [required] URL specifying how to send emails:
 # "sendgrid://apikey?from=noreply@domain.org&fromName=name"
@@ -83,9 +87,13 @@ ingress:
   #    hosts:
   #      - my-axiom.local
 
-# Settings for axiom-core
-core:
+# Settings for axiom-api
+api:
   replicas: 3
+  image:
+    repository: axiomhq/axiom-api
+    pullPolicy: IfNotPresent
+    tag: ""
   resources:
     requests:
       cpu: 250m
@@ -97,11 +105,74 @@ core:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
+  envFrom: []
+  # - configMapRef:
+  #     name: <CONFIGMAP_NAME>
+  # - secretRef:
+  #     name: <SECRET_NAME>
+  extraEnvs: [] 
+    # - name: AXIOM_XYZ
+    #   value: "xyz"
+
+app:
+  replicas: 3
+  image:
+    repository: axiomhq/axiom-app
+    pullPolicy: IfNotPresent
+    tag: ""
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    # limits:
+    #   cpu: 500m
+    #   memory: 1Gi
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  envFrom: []
+  # - configMapRef:
+  #     name: <CONFIGMAP_NAME>
+  # - secretRef:
+  #     name: <SECRET_NAME>
+  extraEnvs: [] 
+    # - name: AXIOM_XYZ
+    #   value: "xyz"
 
 # Settings for axiom-db
 db:
   replicas: 3
+  image:
+    repository: axiomhq/axiom-db
+    pullPolicy: IfNotPresent
+    tag: ""
+  resources:
+    requests:
+      cpu: 750m
+      memory: 2Gi
+    # limits:
+    #   cpu: 2000m
+    #   memory: 4Gi
+  persistentVolume:
+    size: 10Gi
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  envFrom: []
+  #   - configMapRef:
+  #       name: <CONFIGMAP_NAME>
+  #   - secretRef:
+  #       name: <SECRET_NAME>
+  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
+
+monitors:
+  replicas: 1
+  image:
+    repository: axiomhq/axiom-monitors
+    pullPolicy: IfNotPresent
+    tag: ""
   resources:
     requests:
       cpu: 750m
@@ -113,11 +184,43 @@ db:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  envFrom: []
+  #   - configMapRef:
+  #       name: <CONFIGMAP_NAME>
+  #   - secretRef:
+  #       name: <SECRET_NAME>
   extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
+
+dbQueryRunner:
+  replicas: 2
+  image:
+    repository: axiomhq/axiom-db-query-runner
+    pullPolicy: IfNotPresent
+    tag: ""
+  # Lambda query runner URL, you can set to the query fn ALB URL
+  # Its usage overrides axiomdb-query-fn deployment
+  lambdaUrl: ""
+
+  resources:
+    requests:
+      cpu: 750m
+      memory: 2Gi
+    # limits:
+    #   cpu: 2000m
+    #   memory: 4Gi
+  envFrom: []
+  #   - configMapRef:
+  #       name: <CONFIGMAP_NAME>
+  #   - secretRef:
+  #       name: <SECRET_NAME>
 
 # Settings for axiomdb-query-fn
 queryFn:
   replicas: 4
+  image:
+    repository: axiomhq/axiom-db-query-runner
+    pullPolicy: IfNotPresent
+    tag: ""
   resources:
     requests:
       cpu: 500m
@@ -129,4 +232,9 @@ queryFn:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  envFrom: []
+  #   - configMapRef:
+  #       name: <CONFIGMAP_NAME>
+  #   - secretRef:
+  #       name: <SECRET_NAME>
   extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]

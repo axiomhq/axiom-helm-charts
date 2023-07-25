@@ -4,6 +4,8 @@ description: Axiom Private
 type: application
 version: 0.21.0
 appVersion: 1.21.0
+kubeVersion: ">=1.16.0-0"
+home: https://github.com/axiomhq/axiom-helm-charts
 maintainers:
 - name: Axiom Inc.
   email: hello@axiom.co

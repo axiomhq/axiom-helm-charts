@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "axiom.fullname" . }}-query-runner
+spec:
+  selector:
+    matchLabels:
+      app: axiomdb-query-runner
+  template:
+    metadata:
+      labels:
+        app: axiomdb-query-runner
+    spec:
+      containers:
+        - name: axiomdb-query-runner-pod
+          image: axiomhq/axiom-query-runner
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 30
+          resources:
+          {{- toYaml .Values.queryFn.resources | nindent 10 }}
+          {{- with .Values.queryFn.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+          env:
+            - name: AXIOM_ROLE
+              value: query
+            - name: AXIOM_POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  name: axiom-secrets
+                  key: postgres-url
+            - name: AXIOM_STORAGE
+              valueFrom:
+                secretKeyRef:
+                  name: axiom-secrets
+                  key: storage-uri
+            - name: AXIOM_POSTGRES_CONNS
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: db-query-runner-postgres-conns
+                  optional: true
+            - name: AXIOM_FUNCTION_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: lambda-url
+            - name: AXIOM_STREAMING_BATCH_SIZE_FUNCTION
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: query-batch-size
+            - name: AXIOM_PARALLEL_FUNCTION_INVOCATIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: parallel-function-invocations
+                  optional: true
+            - name: AXIOM_NO_BUFFERED_WRITES
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: no-buffered-writes
+                  optional: true
+            - name: AXIOM_MAX_CONCURRENT_INGESTS
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: max-ingests
+                  optional: true
+            - name: AXIOM_DATASET_LIMIT
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: dataset-limit
+                  optional: true
+            - name: AXIOM_SENTRY_DSN
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: sentry-dsn
+            - name: AXIOM_REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: redis-url
+            - name: AXIOM_PUBSUB_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: pubsub-backend
+                  optional: true
+            - name: AXIOM_CACHE_REGISTRY_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: cache-registry-url
+                  optional: true
+            - name: AXIOM_CURSOR_QUERY_DELAY
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: cursor-query-delay
+                  optional: true
+            - name: AXIOM_AXIMETRICS_INGEST_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: aximetrics-ingest-url
+            {{- range .Values.dbQueryRunner.extraEnvs }}
+            - name: {{ quote .name }}
+              value: {{ quote .value }}
+            {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext: {}

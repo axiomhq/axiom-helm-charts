@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: axiom-db
+  name: {{ template "axiom.fullname" . }}-db
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
@@ -32,16 +32,15 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
       containers:
       - name: axiomdb-pod
-        {{- if .Values.db.imageOverride }}
-        image: {{ .Values.db.imageOverride }}
-        {{- else }}
-        image: axiomhq/axiom-db:{{ .Values.db.version | default .Chart.AppVersion }}
-        {{- end }}
+        image: "{{ .Values.db.image.repository }}:{{ .Values.db.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.db.image.pullPolicy }}
         ports:
         - containerPort: 8080
         resources:
           {{- toYaml .Values.db.resources | nindent 10 }}
         env:
+        - name: AXIOM_ROLE
+          value: ingest
         - name: AXIOM_LICENSE_TOKEN
           valueFrom:
             secretKeyRef:
@@ -85,8 +84,6 @@ spec:
           value: {{ .Values.queryFn.replicas | mul 8 | quote }}
         {{- end }}
         {{- end }}
-        - name: AXIOM_JAEGER_URL
-          value: {{ .Values.tracingUrl }}
         - name: AXIOM_JAEGER_SAMPLE_RATE
           value: "0"
         {{- if .Values.sentryDsn }}
@@ -137,9 +134,9 @@ spec:
       {{- end }}
   volumeClaimTemplates:
   - metadata:
-      name: data
+      name: {{ template "axiom.fullname" . }}-data
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 10Gi
+          storage: "{{ .Values.db.persistentVolume.size }}"

@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "axiom.fullname" . }}-monitors
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "axiom.fullname" . }}-monitors
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: {{ template "axiom.fullname" . }}-monitors
+    spec:
+      containers:
+        - name: axiom-monitors-pod
+          image: "{{ .Values.monitors.image.repository }}:{{ .Values.monitors.image.tag | default .Chart.AppVersion }}"
+          args: ["serve", "monitors", "orchestrator", "messenger", "operator"]
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /_liveness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /_liveness
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+          env:
+            - name: AXIOM_MODE
+              value: self-host
+            - name: AXIOM_SERVER_DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: server-debug
+                  optional: true
+            - name: AXIOM_DB_ROUTER
+              value: cumulus
+            - name: AXIOM_DB_URL
+              value: http://{{ template "axiom.fullname" . }}-db-service
+            - name: AXIOM_DB_QUERY_URL
+              value: http://{{ template "axiom.fullname" . }}-db-query-runner
+            - name: AXIOM_ENABLE_JS_MONITORING
+              value: "true"
+            - name: AXIOM_REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: redis-url
+            - name: AXIOM_APP_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: public-url
+            - name: AXIOM_PUBLIC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: public-url
+            - name: AXIOM_PUBLIC_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: public-api-url
+            - name: AXIOM_ASSET_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: assets-url
+                  optional: true
+            - name: AXIOM_VERCEL_WEB_VITALS_PROXY_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: vercel-web-vitals-proxy-url
+                  optional: true
+            - name: AXIOM_VERCEL_LOGDRAIN_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: "axiom-config"
+                  key: "vercel-logdrain-url"
+                  optional: true
+            - name: AXIOM_NO_RATE_LIMITING
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: no-rate-limiting
+                  optional: true
+            - name: AXIOM_NO_QUERY_LIMITING
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: no-query-limiting
+                  optional: true
+            - name: AXIOM_NO_INGEST_LIMITING
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: no-ingest-limiting
+                  optional: true
+            - name: AXIOM_INGRESS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: ingress-host
+            - name: AXIOM_SECURE_SYSLOG_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: axiom-config
+                  key: secure-syslog-host
+          envFrom:
+            - secretRef:
+                name: axiom-monitors-secrets
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.monitors.podSecurityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 60
