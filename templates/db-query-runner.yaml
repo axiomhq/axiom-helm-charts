@@ -23,7 +23,7 @@ spec:
             initialDelaySeconds: 3
             periodSeconds: 30
           resources:
-          {{- toYaml .Values.queryFn.resources | nindent 10 }}
+            {{- toYaml .Values.queryFn.resources | nindent 12 }}
           {{- with .Values.queryFn.envFrom }}
           envFrom:
             {{- toYaml . | nindent 10 }}
@@ -34,87 +34,112 @@ spec:
             - name: AXIOM_POSTGRES_URL
               valueFrom:
                 secretKeyRef:
-                  name: axiom-secrets
+                  name: {{ template "axiom.fullname" . }}-secrets
                   key: postgres-url
             - name: AXIOM_STORAGE
               valueFrom:
                 secretKeyRef:
-                  name: axiom-secrets
+                  name: {{ template "axiom.fullname" . }}-secrets
                   key: storage-uri
             - name: AXIOM_POSTGRES_CONNS
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: db-query-runner-postgres-conns
                   optional: true
             - name: AXIOM_FUNCTION_URL
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: lambda-url
             - name: AXIOM_STREAMING_BATCH_SIZE_FUNCTION
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: query-batch-size
             - name: AXIOM_PARALLEL_FUNCTION_INVOCATIONS
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: parallel-function-invocations
                   optional: true
             - name: AXIOM_NO_BUFFERED_WRITES
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: no-buffered-writes
                   optional: true
             - name: AXIOM_MAX_CONCURRENT_INGESTS
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: max-ingests
                   optional: true
+            - name: AXIOM_LICENSE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "axiom.fullname" . }}-secrets
+                  key: license-token
             - name: AXIOM_DATASET_LIMIT
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: dataset-limit
                   optional: true
             - name: AXIOM_REDIS_URL
               valueFrom:
-                configMapKeyRef:
-                  name: axiom-config
+                secretKeyRef:
+                  name: {{ template "axiom.fullname" . }}-secrets
                   key: redis-url
             - name: AXIOM_PUBSUB_DB
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: pubsub-backend
                   optional: true
             - name: AXIOM_CACHE_REGISTRY_URL
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: cache-registry-url
                   optional: true
             - name: AXIOM_CURSOR_QUERY_DELAY
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: cursor-query-delay
                   optional: true
             - name: AXIOM_AXIMETRICS_INGEST_URL
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: aximetrics-ingest-url
             {{- range .Values.dbQueryRunner.extraEnvs }}
             - name: {{ quote .name }}
               value: {{ quote .value }}
             {{- end }}
-      {{- with .Values.imagePullSecrets }}
+      {{- if or .Values.imagePullSecrets .Values.imageRegistryCredentials }}
       imagePullSecrets:
+        {{- if .Values.imageRegistryCredentials }}
+        - name: {{ template "axiom.fullname" . }}-registry
+        {{- end }}
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ quote .name }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.dbQueryRunner.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.dbQueryRunner.podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- with .Values.dbQueryRunner.nodeSelector }}
+      nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      securityContext: {}
+      {{- with .Values.dbQueryRunner.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.dbQueryRunner.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

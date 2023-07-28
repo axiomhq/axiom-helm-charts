@@ -54,7 +54,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Docker registry configuration
 */}}
 {{- define "axiomImagePullSecret" }}
-{{- printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"auth\":\"%s\"}}}" "https://index.docker.io/v1/" "axiomcust" .Values.registryAccessToken "not@val.id" (printf "%s:%s" "axiomcust" .Values.registryAccessToken | b64enc) | b64enc }}
+{{- printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"auth\":\"%s\"}}}" .Values.imageRegistryCredentials.registry .Values.imageRegistryCredentials.username .Values.imageRegistryCredentials.password .Values.imageRegistryCredentials.email (printf "%s:%s" .Values.imageRegistryCredentials.username .Values.imageRegistryCredentials.password | b64enc) | b64enc }}
 {{- end }}
 
 {{/*

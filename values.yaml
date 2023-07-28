@@ -1,13 +1,20 @@
 # Values file for axiom.
 # This is a YAML-formatted file.
-
-nnameOverride:  # ""
+nameOverride:  # ""
 
 # fullnameOverride -- Override the full qualified app name
 fullnameOverride:  # ""
 
 # imagePullSecrets -- add secrets for private images
 imagePullSecrets: []
+#  - name: <REGISTRY_SECRET>
+
+# imageRegistryCredentials -- add secret Image Registry Credentials
+imageRegistryCredentials: {}
+  # registry: ""
+  # username: ""
+  # password: ""
+  # email: ""
 
 # License token (as provided by Axiom support)
 licenseToken: "" # if not supplied, you'll end up with the free plan
@@ -32,6 +39,13 @@ cacheRegistryUrl: ""
 # "sendgrid://apikey?from=noreply@domain.org&fromName=name"
 # "smtp://username:password@address:port?from=origin-email&fromName=Axiom&insecure=true"
 emailUrl: ""
+
+# [required] JWT Public and Private Key:
+jwtPublicKey: ""
+jwtPrivateKey: ""
+
+# Next Auth Secret, If empty, a random string will be generated
+nextAuthSecret: ""
 
 # URL of this instance, email notifications will use this to link back
 # "https://my-axiom.company.org"
@@ -79,8 +93,8 @@ ingress:
     {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: my-axiom.local
+  hosts: []
+    # - host: my-axiom.local
   tls: []
   #  - secretName: my-axiom-tls
   #    hosts:
@@ -172,6 +186,31 @@ monitors:
   replicas: 1
   image:
     repository: axiomhq/axiom-monitors
+    pullPolicy: IfNotPresent
+    tag: ""
+  resources:
+    requests:
+      cpu: 750m
+      memory: 2Gi
+    # limits:
+    #   cpu: 2000m
+    #   memory: 4Gi
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  envFrom: []
+  #   - configMapRef:
+  #       name: <CONFIGMAP_NAME>
+  #   - secretRef:
+  #       name: <SECRET_NAME>
+  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
+
+# Settings for axiom-login
+login:
+  replicas: 1
+  image:
+    repository: axiomhq/axiom-login
     pullPolicy: IfNotPresent
     tag: ""
   resources:

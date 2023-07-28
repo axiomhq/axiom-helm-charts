@@ -18,7 +18,7 @@ spec:
       containers:
         - name: axiom-monitors-pod
           image: "{{ .Values.monitors.image.repository }}:{{ .Values.monitors.image.tag | default .Chart.AppVersion }}"
-          args: ["serve", "monitors", "orchestrator", "messenger", "operator"]
+          args: ["serve", "monitors", "orchestrator", "messenger"]
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -34,18 +34,21 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 30
           resources:
-            requests:
-              cpu: 250m
-              memory: 256Mi
+            {{- toYaml .Values.monitors.resources | nindent 12 }}
           env:
             - name: AXIOM_MODE
               value: self-host
             - name: AXIOM_SERVER_DEBUG
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: server-debug
                   optional: true
+            - name: AXIOM_POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  key: postgres-url
+                  name: {{ template "axiom.fullname" . }}-secrets
             - name: AXIOM_DB_ROUTER
               value: cumulus
             - name: AXIOM_DB_URL
@@ -56,49 +59,54 @@ spec:
               value: "true"
             - name: AXIOM_REDIS_URL
               valueFrom:
-                configMapKeyRef:
-                  name: axiom-config
+                secretKeyRef:
+                  name: {{ template "axiom.fullname" . }}-secrets
                   key: redis-url
             - name: AXIOM_APP_URL
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: app-url
             - name: AXIOM_NO_RATE_LIMITING
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: no-rate-limiting
                   optional: true
             - name: AXIOM_NO_QUERY_LIMITING
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: no-query-limiting
                   optional: true
             - name: AXIOM_NO_INGEST_LIMITING
               valueFrom:
                 configMapKeyRef:
-                  name: axiom-config
+                  name: {{ template "axiom.fullname" . }}-config
                   key: no-ingest-limiting
                   optional: true
-            - name: AXIOM_INGRESS_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: axiom-config
-                  key: ingress-host
-            - name: AXIOM_SECURE_SYSLOG_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: axiom-config
-                  key: secure-syslog-host
-          envFrom:
-            - secretRef:
-                name: axiom-monitors-secrets
-      {{- with .Values.imagePullSecrets }}
+      {{- if or .Values.imagePullSecrets .Values.imageRegistryCredentials }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- if .Values.imageRegistryCredentials }}
+        - name: {{ template "axiom.fullname" . }}-registry
+        {{- end }}
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ quote .name }}
+        {{- end }}
       {{- end }}
+      {{- with .Values.monitors.podSecurityContext }}
       securityContext:
         {{- toYaml .Values.monitors.podSecurityContext | nindent 8 }}
-      terminationGracePeriodSeconds: 60
+      {{- end }}
+      {{- with .Values.monitors.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.monitors.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.monitors.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

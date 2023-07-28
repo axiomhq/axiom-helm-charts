@@ -7,14 +7,14 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: axiom-db
-  serviceName: "axiom-db"
+      app: {{ template "axiom.fullname" . }}-db
+  serviceName: "{{ template "axiom.fullname" . }}-db"
   podManagementPolicy: "Parallel"
   replicas: {{ .Values.db.replicas }}
   template:
     metadata:
       labels:
-        app: axiom-db
+        app: {{ template "axiom.fullname" . }}-db
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
     spec:
@@ -28,7 +28,7 @@ spec:
                   - key: app
                     operator: In
                     values:
-                    - axiom-db
+                    - {{ template "axiom.fullname" . }}-db
                 topologyKey: "kubernetes.io/hostname"
       containers:
       - name: axiomdb-pod
@@ -44,30 +44,30 @@ spec:
         - name: AXIOM_LICENSE_TOKEN
           valueFrom:
             secretKeyRef:
-              name: axiom-secrets
+              name: {{ template "axiom.fullname" . }}-secrets
               key: license-token
         - name: AXIOM_POSTGRES_PREFIX
           value: {{ .Values.postgresPrefix }}
         - name: AXIOM_POSTGRES_URL
           valueFrom:
             secretKeyRef:
-              name: axiom-secrets
+              name: {{ template "axiom.fullname" . }}-secrets
               key: postgres-url
         - name: AXIOM_REDIS_URL
           valueFrom:
             secretKeyRef:
-              name: axiom-secrets
+              name: {{ template "axiom.fullname" . }}-secrets
               key: redis-url
         - name: AXIOM_CACHE_REGISTRY_URL
           {{- if .Values.cacheRegistryUrl }}
           valueFrom:
             secretKeyRef:
-              name: axiom-secrets
+              name: {{ template "axiom.fullname" . }}-secrets
               key: cache-registry-url
           {{- else }}
           valueFrom:
             secretKeyRef:
-              name: axiom-secrets
+              name: {{ template "axiom.fullname" . }}-secrets
               key: redis-url
           {{- end }}
         {{- if .Values.lambdaUrl }}
@@ -84,18 +84,16 @@ spec:
           value: {{ .Values.queryFn.replicas | mul 8 | quote }}
         {{- end }}
         {{- end }}
-        - name: AXIOM_JAEGER_SAMPLE_RATE
-          value: "0"
         - name: AXIOM_STORAGE
           valueFrom:
             secretKeyRef:
-              name: axiom-secrets
+              name: {{ template "axiom.fullname" . }}-secrets
               key: storage-uri
         {{- if .Values.storage.fallback.uri }}
         - name: AXIOM_STORAGE_FALLBACK
           valueFrom:
             secretKeyRef:
-              name: axiom-secrets
+              name: {{ template "axiom.fullname" . }}-secrets
               key: fallback-storage-uri
         {{- end }}
         {{- range .Values.db.extraEnvs }}
@@ -103,19 +101,21 @@ spec:
           value: {{ quote .value }}
         {{- end }}
         volumeMounts:
-        - name: data
+        - name: {{ template "axiom.fullname" . }}-data
           mountPath: /axiomdb
-      {{- if .Values.registryAccessToken }}
+      {{- if or .Values.imagePullSecrets .Values.imageRegistryCredentials }}
       imagePullSecrets:
-        - name: axiom-registry
-      {{- else if .Values.imagePullSecrets }}
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- if .Values.imageRegistryCredentials }}
+        - name: {{ template "axiom.fullname" . }}-registry
+        {{- end }}
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ quote .name }}
+        {{- end }}
       {{- end }}
-      {{- end }}
+      {{- with .Values.db.podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.db.podSecurityContext | nindent 8 }}
+      {{- end }}
       {{- with .Values.db.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

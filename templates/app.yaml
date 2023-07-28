@@ -22,14 +22,38 @@ spec:
           maxSkew: 1
           topologyKey: topology.kubernetes.io/zone
           whenUnsatisfiable: ScheduleAnyway
+      initContainers:
+        - name: init-axiom-app-pod
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag | default .Chart.AppVersion }}"
+          command: 
+          - sh
+          - -c
+          - "/opt/axiom/core issue-app-token > /env/login_token"
+          volumeMounts:
+            - name: envdir
+              mountPath: "/env"
+          env:
+            - name: AXIOM_LOGIN_JWT_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: login-jwt-public-key
+                  name: {{ template "axiom.fullname" . }}-secrets
+            - name: AXIOM_LOGIN_JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: login-jwt-private-key
+                  name: {{ template "axiom.fullname" . }}-secrets
       containers:
         - name: axiom-app-pod
           image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.app.image.pullPolicy }}
           ports:
             - containerPort: 3000
+          volumeMounts:
+            - name: envdir
+              mountPath: "/env"
           resources:
-            {{- toYaml .Values.app.resources | nindent 10 }}
+            {{- toYaml .Values.app.resources | nindent 12 }}
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -45,33 +69,56 @@ spec:
             {{- toYaml . | nindent 10 }}
           {{- end }}
           env:
+            - name: LOGIN_TOKEN_FILE_PATH
+              value: "/env/login_token"
             - name: AWS_ELB
               value: "1"
             - name: HOST_MODE
               value: "self-host"
+            - name: API_URL
+              value: "/api"
             - name: API_URL_INTERNAL
-              value: "http://{{ template "axiom.fullname" . }}-api"
+              value: "http://{{ template "axiom.fullname" . }}-api/api"
             - name: LOGIN_URL
               value: "http://{{ template "axiom.fullname" . }}-login"
             - name: LOGIN_URL_INTERNAL
               value: "http://{{ template "axiom.fullname" . }}-login"
-            - name: LOGIN_TOKEN
-              value: ""
             - name: NEXTAUTH_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ template "axiom.fullname" . }}-secrets
-                  key: nexauth-secret
+                  key: nextauth-secret
             - name: NEXTAUTH_URL
               value: "{{ .Values.externalUrl }}/frapi/auth"
             {{- range .Values.app.extraEnvs }}
             - name: {{ quote .name }}
               value: {{ quote .value }}
             {{- end }}
-      {{- with .Values.app.imagePullSecrets }}
+      volumes:
+      - name: envdir
+        emptyDir: {}
+      {{- if or .Values.imagePullSecrets .Values.imageRegistryCredentials }}
       imagePullSecrets:
+        {{- if .Values.imageRegistryCredentials }}
+        - name: {{ template "axiom.fullname" . }}-registry
+        {{- end }}
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ quote .name }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.app.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.app.podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      terminationGracePeriodSeconds: 60
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

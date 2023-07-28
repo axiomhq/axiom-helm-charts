@@ -6,13 +6,13 @@ metadata:
     app.kubernetes.io/name: axiom
 data:
   app-url: "{{ .Values.externalUrl }}"
+  public-url: "{{ .Values.externalUrl }}"
   aximetrics-ingest-url: http://{{ template "axiom.fullname" . }}-db-service
   backlog-mode: legacy
   core-tracing-sample-rate: "0"
   dataset-limit: "100"
   db-query-runner-postgres-conns: "20"
-  db-tracing-sample-rate: "0.0001"
-  lambda-url: "{{ .Values.dbQueryRunner.lambdaUrl | default {{ template "axiom.fullname" . }}-db-query-fn }}"
+  lambda-url: {{ .Values.dbQueryRunner.lambdaUrl | default (printf "http://%s-db-query-fn" (include "axiom.fullname" .)) }}
   login-oauth-app-callback: http://localhost
   parallel-function-invocations: "16"
   postgres-conns: "20"

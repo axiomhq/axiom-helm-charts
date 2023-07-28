@@ -32,14 +32,14 @@ spec:
         paths:
           - backend:
               service:
-                name: {{ template "axiom.fullname" . }}-api
+                name: {{ include "axiom.fullname" $ }}-api
                 port:
                   number: 80
             path: /api
             pathType: Prefix
           - backend:
               service:
-                name: {{ template "axiom.fullname" . }}-app
+                name: {{ include "axiom.fullname" $ }}-app
                 port:
                   number: 80
             path: /
@@ -52,11 +52,11 @@ spec:
         paths:
           - path: /api
             backend:
-              serviceName: {{ template "axiom.fullname" . }}-api
+              serviceName: {{ include "axiom.fullname" $ }}-api
               servicePort: 80
           - path: /*
             backend:
-              serviceName: {{ template "axiom.fullname" . }}-app
+              serviceName: {{ include "axiom.fullname" $ }}-app
               servicePort: 80
     {{- end }}
   {{- end }}

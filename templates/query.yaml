@@ -30,28 +30,28 @@ spec:
           {{- toYaml . | nindent 10 }}
         {{- end }}
         env:
-        - name: AXIOM_JAEGER_SAMPLE_RATE
-          value: "0"
         - name: AXIOM_STORAGE
           valueFrom:
             secretKeyRef:
-              name: axiom-secrets
+              name: {{ template "axiom.fullname" . }}-secrets
               key: storage-uri
         {{- range .Values.queryFn.extraEnvs }}
         - name: {{ quote .name }}
           value: {{ quote .value }}
         {{- end }}
-      {{- if .Values.registryAccessToken }}
+      {{- if or .Values.imagePullSecrets .Values.imageRegistryCredentials }}
       imagePullSecrets:
-        - name: axiom-registry
-      {{- else if .Values.imagePullSecrets }}
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- if .Values.imageRegistryCredentials }}
+        - name: {{ template "axiom.fullname" . }}-registry
+        {{- end }}
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ quote .name }}
+        {{- end }}
       {{- end }}
-      {{- end }}
+      {{- with .Values.queryFn.podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.queryFn.podSecurityContext | nindent 8 }}
+      {{- end }}
       {{- with .Values.queryFn.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
