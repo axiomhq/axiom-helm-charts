@@ -67,6 +67,7 @@ spec:
   {{- end }}
 {{- end -}}
 ---
+{{ if .Values.dbQueryRunner.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -100,7 +101,7 @@ spec:
   {{- end }}
 {{- end -}}
 ---
-{{ if .Values.queryFn.autoscaling.enabled  }}
+{{ if .Values.queryFn.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
