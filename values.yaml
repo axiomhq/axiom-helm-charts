@@ -134,6 +134,14 @@ api:
     behavior: {}
       # scaleDown:
       #   stabilizationWindowSeconds: 300
+  podDisruptionBudget:
+    # podDisruptionBudget.enabled -- If **true**, create a
+    # [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/).
+    enabled: false
+    # podDisruptionBudget.minAvailable -- Specify the number of Pods that must still be available after an eviction.
+    minAvailable: 1
+    # podDisruptionBudget.maxUnavailable -- (int) Specify the number of Pods that can be unavailable after an eviction.
+    maxUnavailable:
   envFrom: []
   # - configMapRef:
   #     name: <CONFIGMAP_NAME>
@@ -177,6 +185,14 @@ app:
     behavior: {}
       # scaleDown:
       #   stabilizationWindowSeconds: 300
+  podDisruptionBudget:
+    # podDisruptionBudget.enabled -- If **true**, create a
+    # [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/).
+    enabled: false
+    # podDisruptionBudget.minAvailable -- Specify the number of Pods that must still be available after an eviction.
+    minAvailable: 1
+    # podDisruptionBudget.maxUnavailable -- (int) Specify the number of Pods that can be unavailable after an eviction.
+    maxUnavailable:
   envFrom: []
   # - configMapRef:
   #     name: <CONFIGMAP_NAME>
@@ -231,6 +247,14 @@ monitors:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  podDisruptionBudget:
+    # podDisruptionBudget.enabled -- If **true**, create a
+    # [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/).
+    enabled: false
+    # podDisruptionBudget.minAvailable -- Specify the number of Pods that must still be available after an eviction.
+    minAvailable: 1
+    # podDisruptionBudget.maxUnavailable -- (int) Specify the number of Pods that can be unavailable after an eviction.
+    maxUnavailable:
   envFrom: []
   #   - configMapRef:
   #       name: <CONFIGMAP_NAME>
@@ -256,6 +280,14 @@ login:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  podDisruptionBudget:
+    # podDisruptionBudget.enabled -- If **true**, create a
+    # [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/).
+    enabled: false
+    # podDisruptionBudget.minAvailable -- Specify the number of Pods that must still be available after an eviction.
+    minAvailable: 1
+    # podDisruptionBudget.maxUnavailable -- (int) Specify the number of Pods that can be unavailable after an eviction.
+    maxUnavailable:
   envFrom: []
   #   - configMapRef:
   #       name: <CONFIGMAP_NAME>
@@ -285,6 +317,14 @@ dbQueryRunner:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  podDisruptionBudget:
+    # podDisruptionBudget.enabled -- If **true**, create a
+    # [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/).
+    enabled: false
+    # podDisruptionBudget.minAvailable -- Specify the number of Pods that must still be available after an eviction.
+    minAvailable: 1
+    # podDisruptionBudget.maxUnavailable -- (int) Specify the number of Pods that can be unavailable after an eviction.
+    maxUnavailable:
   autoscaling:
     # autoscaling.enabled -- If **true**, create a
     # [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
@@ -326,6 +366,14 @@ queryFn:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  podDisruptionBudget:
+    # podDisruptionBudget.enabled -- If **true**, create a
+    # [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/).
+    enabled: false
+    # podDisruptionBudget.minAvailable -- Specify the number of Pods that must still be available after an eviction.
+    minAvailable: 1
+    # podDisruptionBudget.maxUnavailable -- (int) Specify the number of Pods that can be unavailable after an eviction.
+    maxUnavailable:
   autoscaling:
     # autoscaling.enabled -- If **true**, create a
     # [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).

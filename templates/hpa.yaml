@@ -1,5 +1,5 @@
 ---
-{{ if .Values.app.autoscaling.enabled }}
+{{- if .Values.app.autoscaling.enabled -}}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -31,9 +31,9 @@ spec:
   {{- if .Values.app.autoscaling.behavior }}
   behavior: {{ toYaml .Values.app.autoscaling.behavior | nindent 4 }}
   {{- end }}
-{{- end -}}
+{{- end }}
 ---
-{{ if .Values.api.autoscaling.enabled }}
+{{- if .Values.api.autoscaling.enabled -}}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -65,9 +65,9 @@ spec:
   {{- if .Values.api.autoscaling.behavior }}
   behavior: {{ toYaml .Values.api.autoscaling.behavior | nindent 4 }}
   {{- end }}
-{{- end -}}
+{{- end }}
 ---
-{{ if .Values.dbQueryRunner.autoscaling.enabled }}
+{{- if .Values.dbQueryRunner.autoscaling.enabled -}}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -99,9 +99,9 @@ spec:
   {{- if .Values.dbQueryRunner.autoscaling.behavior }}
   behavior: {{ toYaml .Values.dbQueryRunner.autoscaling.behavior | nindent 4 }}
   {{- end }}
-{{- end -}}
+{{- end }}
 ---
-{{ if .Values.queryFn.autoscaling.enabled }}
+{{- if .Values.queryFn.autoscaling.enabled -}}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -132,4 +132,5 @@ spec:
   {{- if .Values.queryFn.autoscaling.behavior }}
   behavior: {{ toYaml .Values.queryFn.autoscaling.behavior | nindent 4 }}
   {{- end }}
-{{- end -}}
+{{- end }}
+---
