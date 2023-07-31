@@ -67,7 +67,7 @@ spec:
   {{- end }}
 {{- end }}
 ---
-{{- if .Values.dbQueryRunner.autoscaling.enabled -}}
+{{- if .Values.queryRunner.autoscaling.enabled -}}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -77,27 +77,27 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: {{ template "axiom.fullname" . }}-db-query-runner
-  minReplicas: {{ .Values.dbQueryRunner.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.dbQueryRunner.autoscaling.maxReplicas }}
+  minReplicas: {{ .Values.queryRunner.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.queryRunner.autoscaling.maxReplicas }}
   metrics:
-    {{- if .Values.dbQueryRunner.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- if .Values.queryRunner.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
         target:
           type: Utilization
-          averageUtilization: {{ .Values.dbQueryRunner.autoscaling.targetMemoryUtilizationPercentage }}
+          averageUtilization: {{ .Values.queryRunner.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
-    {{- if .Values.dbQueryRunner.autoscaling.targetCPUUtilizationPercentage }}
+    {{- if .Values.queryRunner.autoscaling.targetCPUUtilizationPercentage }}
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: {{ .Values.dbQueryRunner.autoscaling.targetCPUUtilizationPercentage }}
+          averageUtilization: {{ .Values.queryRunner.autoscaling.targetCPUUtilizationPercentage }}
     {{- end }}
-  {{- if .Values.dbQueryRunner.autoscaling.behavior }}
-  behavior: {{ toYaml .Values.dbQueryRunner.autoscaling.behavior | nindent 4 }}
+  {{- if .Values.queryRunner.autoscaling.behavior }}
+  behavior: {{ toYaml .Values.queryRunner.autoscaling.behavior | nindent 4 }}
   {{- end }}
 {{- end }}
 ---

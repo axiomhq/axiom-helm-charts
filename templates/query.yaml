@@ -1,4 +1,4 @@
-{{- if not .Values.dbQueryRunner.lambdaUrl -}}
+{{- if not .Values.queryRunner.lambdaUrl -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

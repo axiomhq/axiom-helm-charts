@@ -296,7 +296,7 @@ login:
   extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
 
 # Settings for axiom-db-query-runner
-dbQueryRunner:
+queryRunner:
   replicas: 2
   image:
     repository: axiomhq/axiom-db-query-runner

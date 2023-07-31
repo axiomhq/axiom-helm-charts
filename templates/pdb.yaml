@@ -74,7 +74,7 @@ spec:
       app: {{ template "axiom.fullname" . }}-monitors
 {{- end }}
 ---
-{{- if .Values.dbQueryRunner.podDisruptionBudget.enabled -}}
+{{- if .Values.queryRunner.podDisruptionBudget.enabled -}}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
@@ -82,11 +82,11 @@ metadata:
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
-{{- if .Values.dbQueryRunner.podDisruptionBudget.minAvailable }}
-  minAvailable: {{ .Values.dbQueryRunner.podDisruptionBudget.minAvailable }}
+{{- if .Values.queryRunner.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.queryRunner.podDisruptionBudget.minAvailable }}
 {{- end }}
-{{- if .Values.dbQueryRunner.podDisruptionBudget.maxUnavailable }}
-  maxUnavailable: {{ .Values.dbQueryRunner.podDisruptionBudget.maxUnavailable }}
+{{- if .Values.queryRunner.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.queryRunner.podDisruptionBudget.maxUnavailable }}
 {{- end }}
   selector:
     matchLabels:

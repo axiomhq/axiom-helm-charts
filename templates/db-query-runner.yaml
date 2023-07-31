@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: axiomdb-query-runner-pod
-          image: "{{ .Values.dbQueryRunner.image.repository }}:{{ .Values.dbQueryRunner.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.queryRunner.image.repository }}:{{ .Values.queryRunner.image.tag | default .Chart.AppVersion }}"
           ports:
             - containerPort: 8080
           livenessProbe:
@@ -114,7 +114,7 @@ spec:
                 configMapKeyRef:
                   name: {{ template "axiom.fullname" . }}-config
                   key: aximetrics-ingest-url
-            {{- range .Values.dbQueryRunner.extraEnvs }}
+            {{- range .Values.queryRunner.extraEnvs }}
             - name: {{ quote .name }}
               value: {{ quote .value }}
             {{- end }}
@@ -127,19 +127,19 @@ spec:
         - name: {{ quote .name }}
         {{- end }}
       {{- end }}
-      {{- with .Values.dbQueryRunner.podSecurityContext }}
+      {{- with .Values.queryRunner.podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.dbQueryRunner.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.queryRunner.podSecurityContext | nindent 8 }}
       {{- end }}
-      {{- with .Values.dbQueryRunner.nodeSelector }}
+      {{- with .Values.queryRunner.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.dbQueryRunner.affinity }}
+      {{- with .Values.queryRunner.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.dbQueryRunner.tolerations }}
+      {{- with .Values.queryRunner.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
