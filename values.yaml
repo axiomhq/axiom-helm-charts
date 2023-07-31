@@ -118,6 +118,22 @@ api:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  autoscaling:
+    # autoscaling.enabled -- If **true**, create a
+    # [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
+    enabled: false
+    # autoscaling.minReplicas -- Specify the minimum number of replicas.
+    minReplicas: 1
+    # autoscaling.maxReplicas -- Specify the maximum number of replicas.
+    maxReplicas: 10
+    # autoscaling.targetCPUUtilizationPercentage -- Specify the target CPU utilization.
+    targetCPUUtilizationPercentage: 80
+    # autoscaling.targetMemoryUtilizationPercentage -- (int) Specify the target memory utilization.
+    targetMemoryUtilizationPercentage:
+    # autoscaling.behavior -- Configure separate scale-up and scale-down behaviors.
+    behavior: {}
+      # scaleDown:
+      #   stabilizationWindowSeconds: 300
   envFrom: []
   # - configMapRef:
   #     name: <CONFIGMAP_NAME>
@@ -145,6 +161,22 @@ app:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  autoscaling:
+    # autoscaling.enabled -- If **true**, create a
+    # [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
+    enabled: false
+    # autoscaling.minReplicas -- Specify the minimum number of replicas.
+    minReplicas: 1
+    # autoscaling.maxReplicas -- Specify the maximum number of replicas.
+    maxReplicas: 10
+    # autoscaling.targetCPUUtilizationPercentage -- Specify the target CPU utilization.
+    targetCPUUtilizationPercentage: 80
+    # autoscaling.targetMemoryUtilizationPercentage -- (int) Specify the target memory utilization.
+    targetMemoryUtilizationPercentage:
+    # autoscaling.behavior -- Configure separate scale-up and scale-down behaviors.
+    behavior: {}
+      # scaleDown:
+      #   stabilizationWindowSeconds: 300
   envFrom: []
   # - configMapRef:
   #     name: <CONFIGMAP_NAME>
@@ -253,6 +285,22 @@ dbQueryRunner:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  autoscaling:
+    # autoscaling.enabled -- If **true**, create a
+    # [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
+    enabled: false
+    # autoscaling.minReplicas -- Specify the minimum number of replicas.
+    minReplicas: 1
+    # autoscaling.maxReplicas -- Specify the maximum number of replicas.
+    maxReplicas: 10
+    # autoscaling.targetCPUUtilizationPercentage -- Specify the target CPU utilization.
+    targetCPUUtilizationPercentage: 80
+    # autoscaling.targetMemoryUtilizationPercentage -- (int) Specify the target memory utilization.
+    targetMemoryUtilizationPercentage:
+    # autoscaling.behavior -- Configure separate scale-up and scale-down behaviors.
+    behavior: {}
+      # scaleDown:
+      #   stabilizationWindowSeconds: 300
   envFrom: []
   #   - configMapRef:
   #       name: <CONFIGMAP_NAME>
@@ -278,6 +326,22 @@ queryFn:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  autoscaling:
+    # autoscaling.enabled -- If **true**, create a
+    # [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
+    enabled: false
+    # autoscaling.minReplicas -- Specify the minimum number of replicas.
+    minReplicas: 1
+    # autoscaling.maxReplicas -- Specify the maximum number of replicas.
+    maxReplicas: 10
+    # autoscaling.targetCPUUtilizationPercentage -- Specify the target CPU utilization.
+    targetCPUUtilizationPercentage: 80
+    # autoscaling.targetMemoryUtilizationPercentage -- (int) Specify the target memory utilization.
+    targetMemoryUtilizationPercentage:
+    # autoscaling.behavior -- Configure separate scale-up and scale-down behaviors.
+    behavior: {}
+      # scaleDown:
+      #   stabilizationWindowSeconds: 300
   envFrom: []
   #   - configMapRef:
   #       name: <CONFIGMAP_NAME>

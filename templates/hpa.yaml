@@ -1,0 +1,134 @@
+---
+{{ if .Values.app.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "axiom.fullname" . }}-app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "axiom.fullname" . }}-app
+  minReplicas: {{ .Values.app.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.app.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.app.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.app.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.app.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.app.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+  {{- if .Values.app.autoscaling.behavior }}
+  behavior: {{ toYaml .Values.app.autoscaling.behavior | nindent 4 }}
+  {{- end }}
+{{- end -}}
+---
+{{ if .Values.api.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "axiom.fullname" . }}-api
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "axiom.fullname" . }}-api
+  minReplicas: {{ .Values.api.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.api.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.api.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.api.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.api.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.api.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+  {{- if .Values.api.autoscaling.behavior }}
+  behavior: {{ toYaml .Values.api.autoscaling.behavior | nindent 4 }}
+  {{- end }}
+{{- end -}}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "axiom.fullname" . }}-db-query-runner
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "axiom.fullname" . }}-db-query-runner
+  minReplicas: {{ .Values.dbQueryRunner.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.dbQueryRunner.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.dbQueryRunner.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.dbQueryRunner.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.dbQueryRunner.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.dbQueryRunner.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+  {{- if .Values.dbQueryRunner.autoscaling.behavior }}
+  behavior: {{ toYaml .Values.dbQueryRunner.autoscaling.behavior | nindent 4 }}
+  {{- end }}
+{{- end -}}
+---
+{{ if .Values.queryFn.autoscaling.enabled  }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "axiom.fullname" . }}-db-query-fn
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "axiom.fullname" . }}-db-query-fn
+  minReplicas: {{ .Values.queryFn.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.queryFn.autoscaling.maxReplicas }}
+    {{- if .Values.queryFn.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.queryFn.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.queryFn.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.queryFn.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+  {{- if .Values.queryFn.autoscaling.behavior }}
+  behavior: {{ toYaml .Values.queryFn.autoscaling.behavior | nindent 4 }}
+  {{- end }}
+{{- end -}}
