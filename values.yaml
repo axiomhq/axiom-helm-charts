@@ -202,33 +202,6 @@ app:
     # - name: AXIOM_XYZ
     #   value: "xyz"
 
-# Settings for axiom-db
-db:
-  replicas: 3
-  image:
-    repository: axiomhq/axiom-db
-    pullPolicy: IfNotPresent
-    tag: ""
-  resources:
-    requests:
-      cpu: 750m
-      memory: 2Gi
-    # limits:
-    #   cpu: 2000m
-    #   memory: 4Gi
-  persistentVolume:
-    size: 10Gi
-  podAnnotations: {}
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-  envFrom: []
-  #   - configMapRef:
-  #       name: <CONFIGMAP_NAME>
-  #   - secretRef:
-  #       name: <SECRET_NAME>
-  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
-
 # Settings for axiom-monitors
 monitors:
   replicas: 1
@@ -295,15 +268,42 @@ login:
   #       name: <SECRET_NAME>
   extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
 
+# Settings for axiom-db
+db:
+  replicas: 3
+  image:
+    repository: axiomhq/axiom-db
+    pullPolicy: IfNotPresent
+    tag: ""
+  resources:
+    requests:
+      cpu: 750m
+      memory: 2Gi
+    # limits:
+    #   cpu: 2000m
+    #   memory: 4Gi
+  persistentVolume:
+    size: 10Gi
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  envFrom: []
+  #   - configMapRef:
+  #       name: <CONFIGMAP_NAME>
+  #   - secretRef:
+  #       name: <SECRET_NAME>
+  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
+
 # Settings for axiom-db-query-runner
 queryRunner:
   replicas: 2
   image:
-    repository: axiomhq/axiom-db-query-runner
+    repository: axiomhq/axiom-db
     pullPolicy: IfNotPresent
     tag: ""
   # Lambda query runner URL, you can set to the query fn ALB URL
-  # Its usage overrides axiomdb-query-fn deployment
+  # Its usage overrides axiom-db-query-fn deployment
   lambdaUrl: ""
 
   resources:
@@ -352,7 +352,7 @@ queryRunner:
 queryFn:
   replicas: 4
   image:
-    repository: axiomhq/axiom-db-query-runner
+    repository: axiomhq/axiom-db
     pullPolicy: IfNotPresent
     tag: ""
   resources:

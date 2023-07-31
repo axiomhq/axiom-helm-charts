@@ -8,11 +8,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: axiomdb-query-runner
+      app: {{ template "axiom.fullname" . }}-db-query-runner
   template:
     metadata:
       labels:
-        app: axiomdb-query-runner
+        app: {{ template "axiom.fullname" . }}-db-query-runner
     spec:
       containers:
         - name: axiomdb-query-runner-pod
