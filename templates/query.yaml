@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "axiom.fullname" . }}-db-query-fn
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:

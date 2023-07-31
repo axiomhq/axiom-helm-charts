@@ -2,8 +2,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "axiom.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
   labels:
-    app.kubernetes.io/name: axiom
+    {{- include "axiom.labels" . | nindent 4 }}
 data:
   app-url: "{{ .Values.externalUrl }}"
   public-url: "{{ .Values.externalUrl }}"

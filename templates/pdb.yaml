@@ -3,6 +3,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "axiom.fullname" . }}-api
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
@@ -22,6 +23,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "axiom.fullname" . }}-login
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
@@ -41,6 +43,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "axiom.fullname" . }}-app
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
@@ -60,6 +63,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "axiom.fullname" . }}-monitors
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
@@ -79,6 +83,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "axiom.fullname" . }}-db-query-runner
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
@@ -98,6 +103,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "axiom.fullname" . }}-db-query-fn
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
