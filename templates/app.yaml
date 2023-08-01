@@ -86,6 +86,8 @@ spec:
               value: "http://{{ template "axiom.fullname" . }}-login"
             - name: LOGIN_URL_INTERNAL
               value: "http://{{ template "axiom.fullname" . }}-login"
+            - name: ENABLE_API_PROXY
+              value: "true"
             - name: NEXTAUTH_SECRET
               valueFrom:
                 secretKeyRef:

@@ -1,7 +1,7 @@
 {{- if .Values.ingress.enabled }}
 Your application should be available at this URL:
 {{- range $host := .Values.ingress.hosts }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ . | trimSuffix "*" }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}
 {{- end }}
 {{- else }}
 Connect to the application by running this command:
