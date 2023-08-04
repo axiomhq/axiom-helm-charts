@@ -68,6 +68,11 @@ spec:
               value: http://{{ template "axiom.fullname" . }}-db-service
             - name: AXIOM_DB_QUERY_URL
               value: http://{{ template "axiom.fullname" . }}-db-query-runner
+            - name: AXIOM_LICENSE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "axiom.fullname" . }}-secrets
+                  key: license-token
             - name: AXIOM_LOGIN_JWT_PUBLIC_KEY
               valueFrom:
                 secretKeyRef:
