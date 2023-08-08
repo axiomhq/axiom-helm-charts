@@ -352,7 +352,7 @@ queryRunner:
 queryFn:
   replicas: 4
   image:
-    repository: axiomhq/axiom-db
+    repository: axiomhq/axiom-query-func
     pullPolicy: IfNotPresent
     tag: ""
   resources:

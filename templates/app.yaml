@@ -75,7 +75,7 @@ spec:
             - name: LOGIN_TOKEN_FILE_PATH
               value: "/env/login_token"
             - name: AWS_ELB
-              value: "1"
+              value: "true"
             - name: HOST_MODE
               value: "self-host"
             - name: API_URL
