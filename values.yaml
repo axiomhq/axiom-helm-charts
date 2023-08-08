@@ -41,6 +41,11 @@ cacheRegistryUrl: ""
 emailUrl: ""
 
 # [required] JWT Public and Private Key:
+# Generate Using:
+# ```
+#  openssl genpkey -algorithm ed25519 -out privkey.pem
+#  openssl pkey -in privkey.pem -pubout -out pubkey.pem
+# ```
 jwtPublicKey: ""
 jwtPrivateKey: ""
 
