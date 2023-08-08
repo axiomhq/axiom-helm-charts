@@ -65,22 +65,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "axiom.fullname" . }}-login
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "axiom.labels" . | nindent 4 }}
-spec:
-  ports:
-  - name: web
-    port: 80
-    targetPort: 8080
-  selector:
-    app: {{ template "axiom.fullname" . }}-login
-  type: NodePort
----
-apiVersion: v1
-kind: Service
-metadata:
   name: {{ template "axiom.fullname" . }}-db-query-runner
   namespace: {{ .Release.Namespace }}
   labels:

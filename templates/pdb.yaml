@@ -18,26 +18,6 @@ spec:
       app: {{ template "axiom.fullname" . }}-api
 {{- end }}
 ---
-{{- if .Values.login.podDisruptionBudget.enabled -}}
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: {{ template "axiom.fullname" . }}-login
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "axiom.labels" . | nindent 4 }}
-spec:
-{{- if .Values.login.podDisruptionBudget.minAvailable }}
-  minAvailable: {{ .Values.login.podDisruptionBudget.minAvailable }}
-{{- end }}
-{{- if .Values.login.podDisruptionBudget.maxUnavailable }}
-  maxUnavailable: {{ .Values.login.podDisruptionBudget.maxUnavailable }}
-{{- end }}
-  selector:
-    matchLabels:
-      app: {{ template "axiom.fullname" . }}-login
-{{- end }}
----
 {{- if .Values.app.podDisruptionBudget.enabled -}}
 apiVersion: policy/v1
 kind: PodDisruptionBudget

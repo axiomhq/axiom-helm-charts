@@ -242,7 +242,6 @@ monitors:
 
 # Settings for axiom-login
 login:
-  replicas: 1
   image:
     repository: axiomhq/axiom-login
     pullPolicy: IfNotPresent
@@ -254,18 +253,6 @@ login:
     # limits:
     #   cpu: 2000m
     #   memory: 4Gi
-  podAnnotations: {}
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-  podDisruptionBudget:
-    # podDisruptionBudget.enabled -- If **true**, create a
-    # [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/).
-    enabled: false
-    # podDisruptionBudget.minAvailable -- Specify the number of Pods that must still be available after an eviction.
-    minAvailable: 1
-    # podDisruptionBudget.maxUnavailable -- (int) Specify the number of Pods that can be unavailable after an eviction.
-    maxUnavailable:
   envFrom: []
   #   - configMapRef:
   #       name: <CONFIGMAP_NAME>

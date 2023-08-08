@@ -83,9 +83,9 @@ spec:
             - name: API_URL_INTERNAL
               value: "http://{{ template "axiom.fullname" . }}-api/api"
             - name: LOGIN_URL
-              value: "http://{{ template "axiom.fullname" . }}-login"
+              value: "http://localhost:8080"
             - name: LOGIN_URL_INTERNAL
-              value: "http://{{ template "axiom.fullname" . }}-login"
+              value: "http://localhost:8080"
             - name: ENABLE_API_PROXY
               value: "true"
             - name: NEXTAUTH_SECRET
@@ -96,6 +96,67 @@ spec:
             - name: NEXTAUTH_URL
               value: "{{ .Values.externalUrl }}/frapi/auth"
             {{- range .Values.app.extraEnvs }}
+            - name: {{ quote .name }}
+              value: {{ quote .value }}
+            {{- end }}
+        - name: axiom-login-pod
+          image: "{{ .Values.login.image.repository }}:{{ .Values.login.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.login.image.pullPolicy }}
+          args: ["serve", "login"]
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          resources:
+            {{- toYaml .Values.login.resources | nindent 12 }}
+          {{- with .Values.login.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+          env:
+            - name: AXIOM_MODE
+              value: self-host
+            - name: AXIOM_LICENSE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: license-token
+                  name: {{ template "axiom.fullname" . }}-secrets
+            - name: AXIOM_POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  key: postgres-url
+                  name: {{ template "axiom.fullname" . }}-secrets
+            - name: AXIOM_REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  key: redis-url
+                  name: {{ template "axiom.fullname" . }}-secrets
+            - name: AXIOM_LOGIN_OAUTH_APP_CALLBACK
+              valueFrom:
+                configMapKeyRef:
+                  key: login-oauth-app-callback
+                  name: {{ template "axiom.fullname" . }}-config
+            - name: AXIOM_LOGIN_JWT_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: login-jwt-public-key
+                  name: {{ template "axiom.fullname" . }}-secrets
+            - name: AXIOM_LOGIN_JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: login-jwt-private-key
+                  name: {{ template "axiom.fullname" . }}-secrets
+            {{- range .Values.login.extraEnvs }}
             - name: {{ quote .name }}
               value: {{ quote .value }}
             {{- end }}
