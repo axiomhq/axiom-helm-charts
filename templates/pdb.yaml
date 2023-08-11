@@ -1,0 +1,100 @@
+{{- if .Values.api.podDisruptionBudget.enabled -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "axiom.fullname" . }}-api
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+{{- if .Values.api.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.api.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.api.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.api.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app: {{ template "axiom.fullname" . }}-api
+{{- end }}
+---
+{{- if .Values.app.podDisruptionBudget.enabled -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "axiom.fullname" . }}-app
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+{{- if .Values.app.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.app.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.app.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.app.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app: {{ template "axiom.fullname" . }}-app
+{{- end }}
+---
+{{- if .Values.monitors.podDisruptionBudget.enabled -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "axiom.fullname" . }}-monitors
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+{{- if .Values.monitors.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.monitors.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.monitors.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.monitors.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app: {{ template "axiom.fullname" . }}-monitors
+{{- end }}
+---
+{{- if .Values.queryRunner.podDisruptionBudget.enabled -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "axiom.fullname" . }}-db-query-runner
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+{{- if .Values.queryRunner.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.queryRunner.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.queryRunner.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.queryRunner.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app: {{ template "axiom.fullname" . }}-db-query-runner
+{{- end }}
+---
+{{- if .Values.queryFn.podDisruptionBudget.enabled -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "axiom.fullname" . }}-db-query-fn
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+{{- if .Values.queryFn.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.queryFn.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.queryFn.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.queryFn.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app: {{ template "axiom.fullname" . }}db-query-fn
+{{- end }}
+---

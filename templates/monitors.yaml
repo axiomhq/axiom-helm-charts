@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "axiom.fullname" . }}-monitors
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "axiom.fullname" . }}-monitors
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: {{ template "axiom.fullname" . }}-monitors
+    spec:
+      containers:
+        - name: axiom-monitors-pod
+          image: "{{ .Values.monitors.image.repository }}:{{ .Values.monitors.image.tag | default .Chart.AppVersion }}"
+          args: ["serve", "monitors", "orchestrator", "messenger"]
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /_liveness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /_liveness
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          resources:
+            {{- toYaml .Values.monitors.resources | nindent 12 }}
+          env:
+            - name: AXIOM_MODE
+              value: self-host
+            - name: AXIOM_SERVER_DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "axiom.fullname" . }}-config
+                  key: server-debug
+                  optional: true
+            - name: AXIOM_POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  key: postgres-url
+                  name: {{ template "axiom.fullname" . }}-secrets
+            - name: AXIOM_DB_ROUTER
+              value: cumulus
+            - name: AXIOM_DB_URL
+              value: http://{{ template "axiom.fullname" . }}-db-service
+            - name: AXIOM_DB_QUERY_URL
+              value: http://{{ template "axiom.fullname" . }}-db-query-runner
+            - name: AXIOM_ENABLE_JS_MONITORING
+              value: "true"
+            - name: AXIOM_REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "axiom.fullname" . }}-secrets
+                  key: redis-url
+            - name: AXIOM_APP_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "axiom.fullname" . }}-config
+                  key: app-url
+            - name: AXIOM_NO_RATE_LIMITING
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "axiom.fullname" . }}-config
+                  key: no-rate-limiting
+                  optional: true
+            - name: AXIOM_NO_QUERY_LIMITING
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "axiom.fullname" . }}-config
+                  key: no-query-limiting
+                  optional: true
+            - name: AXIOM_NO_INGEST_LIMITING
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "axiom.fullname" . }}-config
+                  key: no-ingest-limiting
+                  optional: true
+      {{- if or .Values.imagePullSecrets .Values.imageRegistryCredentials }}
+      imagePullSecrets:
+        {{- if .Values.imageRegistryCredentials }}
+        - name: {{ template "axiom.fullname" . }}-registry
+        {{- end }}
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ quote .name }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.monitors.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.monitors.podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- with .Values.monitors.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.monitors.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.monitors.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

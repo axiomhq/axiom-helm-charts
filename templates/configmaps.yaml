@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "axiom.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+data:
+  app-url: "{{ .Values.externalUrl }}"
+  public-url: "{{ .Values.externalUrl }}"
+  aximetrics-ingest-url: http://{{ template "axiom.fullname" . }}-db-service
+  backlog-mode: legacy
+  core-tracing-sample-rate: "0"
+  dataset-limit: "100"
+  db-query-runner-postgres-conns: "20"
+  lambda-url: {{ .Values.queryRunner.lambdaUrl | default (printf "http://%s-db-query-fn" (include "axiom.fullname" .)) }}
+  login-oauth-app-callback: http://localhost
+  parallel-function-invocations: "16"
+  postgres-conns: "20"
+  pubsub-backend: redis
+  query-batch-size: "512"
+  server-debug: "0"
+  skip-shutdown-block-flush: "1"

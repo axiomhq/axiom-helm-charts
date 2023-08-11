@@ -1,62 +1,58 @@
-{{- if not .Values.lambdaUrl -}}
+{{- if not .Values.queryRunner.lambdaUrl -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: axiomdb-query
+  name: {{ template "axiom.fullname" . }}-db-query-fn
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      app: axiomdb-query
+      app: {{ template "axiom.fullname" . }}-db-query-fn
   replicas: {{ .Values.queryFn.replicas }}
   template:
     metadata:
       labels:
-        app: axiomdb-query
+        app: {{ template "axiom.fullname" . }}-db-query-fn
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
     spec:
       containers:
-      - name: axiomdb-query-pod
-        {{- if .Values.queryFn.imageOverride }}
-        image: {{ .Values.queryFn.imageOverride }}
-        {{- else }}
-        image: axiomhq/axiom-query-func:{{ .Values.queryFn.version | default .Chart.AppVersion }}
-        {{- end }}
+      - name: axiomdb-query-fn-pod
+        image: "{{ .Values.queryFn.image.repository }}:{{ .Values.queryFn.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.queryFn.image.pullPolicy }}
         ports:
         - containerPort: 9090
         resources:
           {{- toYaml .Values.queryFn.resources | nindent 10 }}
-        env:
-        - name: AXIOM_JAEGER_URL
-          value: {{ .Values.tracingUrl }}
-        - name: AXIOM_JAEGER_SAMPLE_RATE
-          value: "0"
-        {{- if .Values.sentryDsn }}
-        - name: AXIOM_SENTRY_DSN
-          value: {{ .Values.sentryDsn }}
+        {{- with .Values.queryFn.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 10 }}
         {{- end }}
+        env:
         - name: AXIOM_STORAGE
           valueFrom:
             secretKeyRef:
-              name: axiom-secrets
+              name: {{ template "axiom.fullname" . }}-secrets
               key: storage-uri
         {{- range .Values.queryFn.extraEnvs }}
         - name: {{ quote .name }}
           value: {{ quote .value }}
         {{- end }}
-      {{- if .Values.registryAccessToken }}
+      {{- if or .Values.imagePullSecrets .Values.imageRegistryCredentials }}
       imagePullSecrets:
-        - name: axiom-registry
-      {{- else if .Values.imagePullSecrets }}
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- if .Values.imageRegistryCredentials }}
+        - name: {{ template "axiom.fullname" . }}-registry
+        {{- end }}
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ quote .name }}
+        {{- end }}
       {{- end }}
-      {{- end }}
+      {{- with .Values.queryFn.podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.queryFn.podSecurityContext | nindent 8 }}
+      {{- end }}
       {{- with .Values.queryFn.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

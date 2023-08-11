@@ -1,5 +1,20 @@
 # Values file for axiom.
 # This is a YAML-formatted file.
+nameOverride:  # ""
+
+# fullnameOverride -- Override the full qualified app name
+fullnameOverride:  # ""
+
+# imagePullSecrets -- add secrets for private images
+imagePullSecrets: []
+#  - name: <REGISTRY_SECRET>
+
+# imageRegistryCredentials -- add secret Image Registry Credentials
+imageRegistryCredentials: {}
+  # registry: ""
+  # username: ""
+  # password: ""
+  # email: ""
 
 # License token (as provided by Axiom support)
 licenseToken: "" # if not supplied, you'll end up with the free plan
@@ -20,14 +35,22 @@ redisUrl: ""
 # If you leave this unset, it will use the above redisUrl as cache registry.
 cacheRegistryUrl: ""
 
-# Lambda query runner URL, you can set to the query fn ALB URL
-# Its usage overrides axiomdb-query-fn deployment
-lambdaUrl: ""
-
 # [required] URL specifying how to send emails:
 # "sendgrid://apikey?from=noreply@domain.org&fromName=name"
 # "smtp://username:password@address:port?from=origin-email&fromName=Axiom&insecure=true"
 emailUrl: ""
+
+# [required] JWT Public and Private Key:
+# Generate Using:
+# ```
+#  openssl genpkey -algorithm ed25519 -out privkey.pem
+#  openssl pkey -in privkey.pem -pubout -out pubkey.pem
+# ```
+jwtPublicKey: ""
+jwtPrivateKey: ""
+
+# Next Auth Secret, If empty, a random string will be generated
+nextAuthSecret: ""
 
 # URL of this instance, email notifications will use this to link back
 # "https://my-axiom.company.org"
@@ -75,17 +98,20 @@ ingress:
     {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: my-axiom.local
-      paths: ["/*"]
+  hosts: []
+    # - host: my-axiom.local
   tls: []
   #  - secretName: my-axiom-tls
   #    hosts:
   #      - my-axiom.local
 
-# Settings for axiom-core
-core:
+# Settings for axiom-api
+api:
   replicas: 3
+  image:
+    repository: axiomhq/axiom-api
+    pullPolicy: IfNotPresent
+    tag: ""
   resources:
     requests:
       cpu: 250m
@@ -97,11 +123,97 @@ core:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
+  autoscaling:
+    # autoscaling.enabled -- If **true**, create a
+    # [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
+    enabled: false
+    # autoscaling.minReplicas -- Specify the minimum number of replicas.
+    minReplicas: 1
+    # autoscaling.maxReplicas -- Specify the maximum number of replicas.
+    maxReplicas: 10
+    # autoscaling.targetCPUUtilizationPercentage -- Specify the target CPU utilization.
+    targetCPUUtilizationPercentage: 80
+    # autoscaling.targetMemoryUtilizationPercentage -- (int) Specify the target memory utilization.
+    targetMemoryUtilizationPercentage:
+    # autoscaling.behavior -- Configure separate scale-up and scale-down behaviors.
+    behavior: {}
+      # scaleDown:
+      #   stabilizationWindowSeconds: 300
+  podDisruptionBudget:
+    # podDisruptionBudget.enabled -- If **true**, create a
+    # [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/).
+    enabled: false
+    # podDisruptionBudget.minAvailable -- Specify the number of Pods that must still be available after an eviction.
+    minAvailable: 1
+    # podDisruptionBudget.maxUnavailable -- (int) Specify the number of Pods that can be unavailable after an eviction.
+    maxUnavailable:
+  envFrom: []
+  # - configMapRef:
+  #     name: <CONFIGMAP_NAME>
+  # - secretRef:
+  #     name: <SECRET_NAME>
+  extraEnvs: [] 
+    # - name: AXIOM_XYZ
+    #   value: "xyz"
 
-# Settings for axiom-db
-db:
+# Settings for axiom-app
+app:
   replicas: 3
+  image:
+    repository: axiomhq/axiom-app
+    pullPolicy: IfNotPresent
+    tag: ""
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    # limits:
+    #   cpu: 500m
+    #   memory: 1Gi
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  autoscaling:
+    # autoscaling.enabled -- If **true**, create a
+    # [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
+    enabled: false
+    # autoscaling.minReplicas -- Specify the minimum number of replicas.
+    minReplicas: 1
+    # autoscaling.maxReplicas -- Specify the maximum number of replicas.
+    maxReplicas: 10
+    # autoscaling.targetCPUUtilizationPercentage -- Specify the target CPU utilization.
+    targetCPUUtilizationPercentage: 80
+    # autoscaling.targetMemoryUtilizationPercentage -- (int) Specify the target memory utilization.
+    targetMemoryUtilizationPercentage:
+    # autoscaling.behavior -- Configure separate scale-up and scale-down behaviors.
+    behavior: {}
+      # scaleDown:
+      #   stabilizationWindowSeconds: 300
+  podDisruptionBudget:
+    # podDisruptionBudget.enabled -- If **true**, create a
+    # [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/).
+    enabled: false
+    # podDisruptionBudget.minAvailable -- Specify the number of Pods that must still be available after an eviction.
+    minAvailable: 1
+    # podDisruptionBudget.maxUnavailable -- (int) Specify the number of Pods that can be unavailable after an eviction.
+    maxUnavailable:
+  envFrom: []
+  # - configMapRef:
+  #     name: <CONFIGMAP_NAME>
+  # - secretRef:
+  #     name: <SECRET_NAME>
+  extraEnvs: [] 
+    # - name: AXIOM_XYZ
+    #   value: "xyz"
+
+# Settings for axiom-monitors
+monitors:
+  replicas: 1
+  image:
+    repository: axiomhq/axiom-monitors
+    pullPolicy: IfNotPresent
+    tag: ""
   resources:
     requests:
       cpu: 750m
@@ -113,11 +225,128 @@ db:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  podDisruptionBudget:
+    # podDisruptionBudget.enabled -- If **true**, create a
+    # [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/).
+    enabled: false
+    # podDisruptionBudget.minAvailable -- Specify the number of Pods that must still be available after an eviction.
+    minAvailable: 1
+    # podDisruptionBudget.maxUnavailable -- (int) Specify the number of Pods that can be unavailable after an eviction.
+    maxUnavailable:
+  envFrom: []
+  #   - configMapRef:
+  #       name: <CONFIGMAP_NAME>
+  #   - secretRef:
+  #       name: <SECRET_NAME>
   extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
 
-# Settings for axiomdb-query-fn
+# Settings for axiom-login
+login:
+  image:
+    repository: axiomhq/axiom-login
+    pullPolicy: IfNotPresent
+    tag: ""
+  resources:
+    requests:
+      cpu: 750m
+      memory: 2Gi
+    # limits:
+    #   cpu: 2000m
+    #   memory: 4Gi
+  envFrom: []
+  #   - configMapRef:
+  #       name: <CONFIGMAP_NAME>
+  #   - secretRef:
+  #       name: <SECRET_NAME>
+  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
+
+# Settings for axiom-db
+db:
+  replicas: 3
+  image:
+    repository: axiomhq/axiom-db
+    pullPolicy: IfNotPresent
+    tag: ""
+  resources:
+    requests:
+      cpu: 750m
+      memory: 2Gi
+    # limits:
+    #   cpu: 2000m
+    #   memory: 4Gi
+  persistentVolume:
+    size: 10Gi
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  envFrom: []
+  #   - configMapRef:
+  #       name: <CONFIGMAP_NAME>
+  #   - secretRef:
+  #       name: <SECRET_NAME>
+  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
+
+# Settings for axiom-db-query-runner
+queryRunner:
+  replicas: 2
+  image:
+    repository: axiomhq/axiom-db
+    pullPolicy: IfNotPresent
+    tag: ""
+  # Lambda query runner URL, you can set to the query fn ALB URL
+  # Its usage overrides axiom-db-query-fn deployment
+  lambdaUrl: ""
+
+  resources:
+    requests:
+      cpu: 750m
+      memory: 2Gi
+    # limits:
+    #   cpu: 2000m
+    #   memory: 4Gi
+  podAnnotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podDisruptionBudget:
+    # podDisruptionBudget.enabled -- If **true**, create a
+    # [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/).
+    enabled: false
+    # podDisruptionBudget.minAvailable -- Specify the number of Pods that must still be available after an eviction.
+    minAvailable: 1
+    # podDisruptionBudget.maxUnavailable -- (int) Specify the number of Pods that can be unavailable after an eviction.
+    maxUnavailable:
+  autoscaling:
+    # autoscaling.enabled -- If **true**, create a
+    # [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
+    enabled: false
+    # autoscaling.minReplicas -- Specify the minimum number of replicas.
+    minReplicas: 1
+    # autoscaling.maxReplicas -- Specify the maximum number of replicas.
+    maxReplicas: 10
+    # autoscaling.targetCPUUtilizationPercentage -- Specify the target CPU utilization.
+    targetCPUUtilizationPercentage: 80
+    # autoscaling.targetMemoryUtilizationPercentage -- (int) Specify the target memory utilization.
+    targetMemoryUtilizationPercentage:
+    # autoscaling.behavior -- Configure separate scale-up and scale-down behaviors.
+    behavior: {}
+      # scaleDown:
+      #   stabilizationWindowSeconds: 300
+  envFrom: []
+  #   - configMapRef:
+  #       name: <CONFIGMAP_NAME>
+  #   - secretRef:
+  #       name: <SECRET_NAME>
+  extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
+
+# Settings for axiom-db-query-fn
 queryFn:
   replicas: 4
+  image:
+    repository: axiomhq/axiom-query-func
+    pullPolicy: IfNotPresent
+    tag: ""
   resources:
     requests:
       cpu: 500m
@@ -129,4 +358,33 @@ queryFn:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  podDisruptionBudget:
+    # podDisruptionBudget.enabled -- If **true**, create a
+    # [PodDisruptionBudget](https://kubernetes.io/docs/tasks/run-application/configure-pdb/).
+    enabled: false
+    # podDisruptionBudget.minAvailable -- Specify the number of Pods that must still be available after an eviction.
+    minAvailable: 1
+    # podDisruptionBudget.maxUnavailable -- (int) Specify the number of Pods that can be unavailable after an eviction.
+    maxUnavailable:
+  autoscaling:
+    # autoscaling.enabled -- If **true**, create a
+    # [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).
+    enabled: false
+    # autoscaling.minReplicas -- Specify the minimum number of replicas.
+    minReplicas: 1
+    # autoscaling.maxReplicas -- Specify the maximum number of replicas.
+    maxReplicas: 10
+    # autoscaling.targetCPUUtilizationPercentage -- Specify the target CPU utilization.
+    targetCPUUtilizationPercentage: 80
+    # autoscaling.targetMemoryUtilizationPercentage -- (int) Specify the target memory utilization.
+    targetMemoryUtilizationPercentage:
+    # autoscaling.behavior -- Configure separate scale-up and scale-down behaviors.
+    behavior: {}
+      # scaleDown:
+      #   stabilizationWindowSeconds: 300
+  envFrom: []
+  #   - configMapRef:
+  #       name: <CONFIGMAP_NAME>
+  #   - secretRef:
+  #       name: <SECRET_NAME>
   extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]

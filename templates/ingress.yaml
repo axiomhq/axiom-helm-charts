@@ -6,7 +6,8 @@ apiVersion: networking.k8s.io/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: axiom-ingress
+  name: {{ template "axiom.fullname" . }}-ingress
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "axiom.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
@@ -30,27 +31,34 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ . }}
-            pathType: Prefix
-            backend:
+          - backend:
               service:
-                name: axiom-core
+                name: {{ include "axiom.fullname" $ }}-api
                 port:
                   number: 80
-          {{- end }}
+            path: /api
+            pathType: Prefix
+          - backend:
+              service:
+                name: {{ include "axiom.fullname" $ }}-app
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
     {{- end }}
   {{- else -}}
     {{- range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ . }}
+          - path: /api
             backend:
-              serviceName: axiom-core
+              serviceName: {{ include "axiom.fullname" $ }}-api
               servicePort: 80
-          {{- end }}
+          - path: /*
+            backend:
+              serviceName: {{ include "axiom.fullname" $ }}-app
+              servicePort: 80
     {{- end }}
   {{- end }}
 {{- end }}

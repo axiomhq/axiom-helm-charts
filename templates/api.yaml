@@ -1,0 +1,134 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "axiom.fullname" . }}-api
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "axiom.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "axiom.fullname" . }}-api
+  replicas: {{ .Values.api.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "axiom.fullname" . }}-api
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                    - {{ template "axiom.fullname" . }}-api
+                topologyKey: "kubernetes.io/hostname"
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app: {{ template "axiom.fullname" . }}-api
+          maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+      containers:
+        - name: axiom-api-pod
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          args: ["serve", "api"]
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          resources:
+            {{- toYaml .Values.api.resources | nindent 12 }}
+          {{- with .Values.api.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+          env:
+            - name: AXIOM_MODE
+              value: self-host
+            - name: AXIOM_DB_URL
+              value: http://{{ template "axiom.fullname" . }}-db-service
+            - name: AXIOM_DB_QUERY_URL
+              value: http://{{ template "axiom.fullname" . }}-db-query-runner
+            - name: AXIOM_LICENSE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "axiom.fullname" . }}-secrets
+                  key: license-token
+            - name: AXIOM_LOGIN_JWT_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: login-jwt-public-key
+                  name: {{ template "axiom.fullname" . }}-secrets
+            - name: AXIOM_LOGIN_JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: login-jwt-private-key
+                  name: {{ template "axiom.fullname" . }}-secrets
+            - name: AXIOM_POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  key: postgres-url
+                  name: {{ template "axiom.fullname" . }}-secrets
+            - name: AXIOM_REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "axiom.fullname" . }}-secrets
+                  key: redis-url
+            - name: AXIOM_APP_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "axiom.fullname" . }}-config
+                  key: public-url
+            - name: AXIOM_PUBLIC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "axiom.fullname" . }}-config
+                  key: public-url
+            {{- range .Values.api.extraEnvs }}
+            - name: {{ quote .name }}
+              value: {{ quote .value }}
+            {{- end }}
+      {{- if or .Values.imagePullSecrets .Values.imageRegistryCredentials }}
+      imagePullSecrets:
+        {{- if .Values.imageRegistryCredentials }}
+        - name: {{ template "axiom.fullname" . }}-registry
+        {{- end }}
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ quote .name }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.api.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.api.podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- with .Values.api.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.api.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.api.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
