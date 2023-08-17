@@ -96,7 +96,18 @@ core:
   podAnnotations: {}
   nodeSelector: {}
   tolerations: []
-  affinity: {}
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - axiom-core
+            topologyKey: "kubernetes.io/hostname"
   extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
 
 # Settings for axiom-db
@@ -112,7 +123,18 @@ db:
   podAnnotations: {}
   nodeSelector: {}
   tolerations: []
-  affinity: {}
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - axiom-db
+            topologyKey: "kubernetes.io/hostname"
   extraEnvs: [] # [{ name: AXIOM_XYZ, value: "xyz" }, ... ]
 
 # Settings for axiomdb-query-fn
